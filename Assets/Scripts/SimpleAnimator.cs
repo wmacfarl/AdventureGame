@@ -9,6 +9,11 @@ public class SimpleAnimator : MonoBehaviour
     public List<Sprite> walkDownSprites;
     public List<Sprite> walkRightSprites;
 
+    public List<Sprite> walkCarryLeftSprites;
+    public List<Sprite> walkCarryUpSprites;
+    public List<Sprite> walkCarryDownSprites;
+    public List<Sprite> walkCarryRightSprites;
+
     public List<Sprite> liftUpSprites;
     public List<Sprite> liftDownSprites;
     public List<Sprite> liftLeftSprites;
@@ -18,6 +23,12 @@ public class SimpleAnimator : MonoBehaviour
     public List<Sprite> idleUpSprites;
     public List<Sprite> idleDownSprites;
     public List<Sprite> idleRightSprites;
+
+    public List<Sprite> idleCarryLeftSprites;
+    public List<Sprite> idleCarryUpSprites;
+    public List<Sprite> idleCarryDownSprites;
+    public List<Sprite> idleCarryRightSprites;
+
 
     public float walkCycleDuration;
     public float idleCycleDuration;
@@ -36,11 +47,17 @@ public class SimpleAnimator : MonoBehaviour
 
     SpriteRenderer sprite;
 
+    public enum CarryingState
+    {
+        NOT_CARRYING = 0,
+        CARRYING = 1
+    }
+
     public enum MovementState
     {
         IDLING = 0,
         WALKING = 1,
-        LIFTING = 2
+        LIFTING = 2,
     }
 
     public enum MovementFacing
@@ -56,7 +73,6 @@ public class SimpleAnimator : MonoBehaviour
     void Start()
     {
         sprite = GetComponent<SpriteRenderer>();
-        EnterAnimationState(MovementState.IDLING, MovementFacing.RIGHT);
     }
 
     // Update is called once per frame
@@ -96,71 +112,109 @@ public class SimpleAnimator : MonoBehaviour
         }
     }
 
-    public void EnterAnimationState(MovementState movementState, MovementFacing movementFacing)
+    public void EnterAnimationState(MovementState movementState, MovementFacing movementFacing, CarryingState carryingState)
     {
-        currentSpriteList = GetAnimationSprites(movementState, movementFacing);
+        currentSpriteList = GetAnimationSprites(movementState, movementFacing, carryingState);
         currentFrameDuration = GetCycleDuration(movementState) / currentSpriteList.Count;
         currentFrameIndex = 0;
         timeAtLastFrame = Time.time;
     }
 
-    List<Sprite> GetAnimationSprites(MovementState movementState, MovementFacing movementFacing)
+    List<Sprite> GetAnimationSprites(MovementState movementState, MovementFacing movementFacing, CarryingState carryingState)
     {
-        if (movementState == MovementState.IDLING && movementFacing == MovementFacing.LEFT)
+        if (carryingState == CarryingState.NOT_CARRYING)
         {
-            return idleLeftSprites;
-        }
-        else if (movementState == MovementState.IDLING && movementFacing == MovementFacing.RIGHT)
-        {
-            return idleRightSprites;
-        }
-        else if (movementState == MovementState.IDLING && movementFacing == MovementFacing.UP)
-        {
-            return idleUpSprites;
-        }
-        else if (movementState == MovementState.IDLING && movementFacing == MovementFacing.DOWN)
-        {
-            return idleDownSprites;
-        }
+            if (movementState == MovementState.IDLING && movementFacing == MovementFacing.LEFT)
+            {
+                return idleLeftSprites;
+            }
+            else if (movementState == MovementState.IDLING && movementFacing == MovementFacing.RIGHT)
+            {
+                return idleRightSprites;
+            }
+            else if (movementState == MovementState.IDLING && movementFacing == MovementFacing.UP)
+            {
+                return idleUpSprites;
+            }
+            else if (movementState == MovementState.IDLING && movementFacing == MovementFacing.DOWN)
+            {
+                return idleDownSprites;
+            }
 
-        else if (movementState == MovementState.WALKING && movementFacing == MovementFacing.LEFT)
-        {
-            return walkLeftSprites;
-        }
-        else if (movementState == MovementState.WALKING && movementFacing == MovementFacing.RIGHT)
-        {
-            return walkRightSprites;
-        }
-        else if (movementState == MovementState.WALKING && movementFacing == MovementFacing.UP)
-        {
-            return walkUpSprites;
-        }
-        else if (movementState == MovementState.WALKING && movementFacing == MovementFacing.DOWN)
-        {
-            return walkDownSprites;
-        }
+            else if (movementState == MovementState.WALKING && movementFacing == MovementFacing.LEFT)
+            {
+                return walkLeftSprites;
+            }
+            else if (movementState == MovementState.WALKING && movementFacing == MovementFacing.RIGHT)
+            {
+                return walkRightSprites;
+            }
+            else if (movementState == MovementState.WALKING && movementFacing == MovementFacing.UP)
+            {
+                return walkUpSprites;
+            }
+            else if (movementState == MovementState.WALKING && movementFacing == MovementFacing.DOWN)
+            {
+                return walkDownSprites;
+            }
 
-        else if (movementState == MovementState.WALKING && movementFacing == MovementFacing.LEFT)
-        {
-            return liftLeftSprites;
-        }
-        else if (movementState == MovementState.LIFTING && movementFacing == MovementFacing.RIGHT)
-        {
-            return liftRightSprites;
-        }
-        else if (movementState == MovementState.LIFTING && movementFacing == MovementFacing.UP)
-        {
-            return liftUpSprites;
-        }
-        else if (movementState == MovementState.LIFTING && movementFacing == MovementFacing.DOWN)
-        {
-            return liftDownSprites;
+            else if (movementState == MovementState.WALKING && movementFacing == MovementFacing.LEFT)
+            {
+                return liftLeftSprites;
+            }
+            else if (movementState == MovementState.LIFTING && movementFacing == MovementFacing.RIGHT)
+            {
+                return liftRightSprites;
+            }
+            else if (movementState == MovementState.LIFTING && movementFacing == MovementFacing.UP)
+            {
+                return liftUpSprites;
+            }
+            else if (movementState == MovementState.LIFTING && movementFacing == MovementFacing.DOWN)
+            {
+                return liftDownSprites;
+            }
         }
         else
         {
-            Debug.Log("NO ANIMATION STATE.  Facing = " + movementFacing +", State = " + movementState);
-            return null;
+            if (movementState == MovementState.IDLING && movementFacing == MovementFacing.LEFT)
+            {
+                return idleCarryLeftSprites;
+            }
+            else if (movementState == MovementState.IDLING && movementFacing == MovementFacing.RIGHT)
+            {
+                return idleCarryRightSprites;
+            }
+            else if (movementState == MovementState.IDLING && movementFacing == MovementFacing.UP)
+            {
+                return idleCarryUpSprites;
+            }
+            else if (movementState == MovementState.IDLING && movementFacing == MovementFacing.DOWN)
+            {
+                return idleCarryDownSprites;
+            }
+
+            else if (movementState == MovementState.WALKING && movementFacing == MovementFacing.LEFT)
+            {
+                return walkCarryLeftSprites;
+            }
+            else if (movementState == MovementState.WALKING && movementFacing == MovementFacing.RIGHT)
+            {
+                return walkCarryRightSprites;
+            }
+            else if (movementState == MovementState.WALKING && movementFacing == MovementFacing.UP)
+            {
+                return walkCarryUpSprites;
+            }
+            else if (movementState == MovementState.WALKING && movementFacing == MovementFacing.DOWN)
+            {
+                return walkCarryDownSprites;
+            }
         }
+
+
+            Debug.Log("NO ANIMATION STATE.  Facing = " + movementFacing + ", State = " + movementState);
+            return null;
     }
 
     float GetAnimationDuration(List<Sprite> sprites) {

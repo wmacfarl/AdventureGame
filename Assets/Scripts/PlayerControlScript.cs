@@ -9,29 +9,50 @@ public class PlayerControlScript : MonoBehaviour
     public float speed;
     new Rigidbody2D rigidbody;
 
+    bool canTakeInput = true;
+
     MovementFacing currentMovementFacing;
-    MovementState currentMovementState;
+    public MovementState currentMovementState;
+    CarryingState currentCarryingState;
 
     MovementFacing previousMovementFacing;
     MovementState previousMovementState;
+    CarryingState previousCarryingState;
 
     SimpleAnimator animator;
+    List<Collision2D> CurrentCollisions;
+    new BoxCollider2D collider;
+    GameObject objectIAmCarrying = null;
 
-   
+    public Vector2Int numberOfRaycastsPerSide;
+    public float raycastPadding;
+    public float raycastDistance;
+    public LayerMask objectLayers;
+    public float pickUpAnimationLength;
+    public Vector2 carryOffset = new Vector2(0, 1.3f);
+
     void Start()
     {
         rigidbody = GetComponent<Rigidbody2D>();
         animator = GetComponent<SimpleAnimator>();
+        CurrentCollisions = new List<Collision2D>();
+        collider = GetComponent<BoxCollider2D>();
+        currentMovementState = MovementState.IDLING;
+        currentMovementFacing = MovementFacing.RIGHT;
+        animator.EnterAnimationState(currentMovementState, currentMovementFacing, currentCarryingState );
+        animator.liftCycleDuration = pickUpAnimationLength;
     }
 
     void Update()
     {
-        bool canMove = true;
-        PerformActions(GetActionInput());
-        if (canMove)
+        if (canTakeInput)
         {
-            PerformMovement(GetDirectionInput());
+            PerformActions(GetActionInput());
+            {
+                PerformMovement(GetDirectionInput());
+            }
         }
+
     }
 
 
@@ -52,10 +73,6 @@ public class PlayerControlScript : MonoBehaviour
             inputY = 1;
         }
         if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
-        {
-            inputY = -1;
-        }
-        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.S))
         {
             inputY = -1;
         }
@@ -91,9 +108,54 @@ public class PlayerControlScript : MonoBehaviour
         }
     }
 
+    IEnumerator BeginLift(GameObject objectToPickUp)
+    {
+        canTakeInput = false;
+        currentMovementState = MovementState.LIFTING;
+        yield return new WaitForSeconds(pickUpAnimationLength);
+        CompleteLift(objectToPickUp);
+        canTakeInput = true;
+    }
+
+    public void CompleteLift(GameObject objectToPickUp)
+    {
+        objectToPickUp.GetComponent<PickupableScript>().GetPickedUp(gameObject, carryOffset);
+        currentCarryingState = CarryingState.CARRYING;
+        currentMovementState = MovementState.IDLING;
+        objectIAmCarrying = objectToPickUp;
+    }
+
     public void PerformPrimaryAction()
     {
+        if (objectIAmCarrying == null)
+        {
+            GameObject objectToPickUp = GetObjectIShouldPickUp();
+            if (objectToPickUp != null)
+            {
+                StartCoroutine(BeginLift(objectToPickUp));
+            }
+        }
+        else
+        {
 
+        }
+    }
+
+    GameObject GetObjectIShouldPickUp()
+    {
+        List<GameObject> ObjectsIAmFacing = GetObjectsIAmFacing();
+        GameObject closetObjectICanPickup = null;
+        float closestObjectDistance = 10000;
+        foreach (GameObject objectIAmFacing in ObjectsIAmFacing)
+        {
+            float distanceBetweenMeAndObject = Vector2.SqrMagnitude(transform.position - objectIAmFacing.transform.position);
+            if (objectIAmFacing.GetComponent<PickupableScript>() != null && distanceBetweenMeAndObject < closestObjectDistance)
+            {
+                closestObjectDistance = distanceBetweenMeAndObject;
+                closetObjectICanPickup = objectIAmFacing;
+            }            
+        }
+        return closetObjectICanPickup;
     }
 
     public void PerformSecondaryAction()
@@ -132,16 +194,73 @@ public class PlayerControlScript : MonoBehaviour
         }
         else
         {
-            currentMovementState = MovementState.IDLING;
+            if (currentMovementState != MovementState.LIFTING)
+            {
+                currentMovementState = MovementState.IDLING;
+            }
         }
 
-        if (currentMovementFacing != previousMovementFacing || currentMovementState != previousMovementState)
+        if (currentMovementFacing != previousMovementFacing || currentMovementState != previousMovementState || currentCarryingState != previousCarryingState)
         {
-            animator.EnterAnimationState(currentMovementState, currentMovementFacing);
+            animator.EnterAnimationState(currentMovementState, currentMovementFacing, currentCarryingState);
         }
 
         previousMovementState = currentMovementState;
         previousMovementFacing = currentMovementFacing;
+        previousCarryingState = currentCarryingState;
     }
 
+    List<GameObject> GetObjectsIAmFacing()
+    {
+        Bounds bounds = collider.bounds;
+        Vector3 raycastCorner = new Vector3();
+        Vector3 raycastDirection = new Vector3();
+        Vector3 perpendicularDeltaBetweenRaycasts = new Vector3();
+        int currentRaycastsPerSide = 0;
+
+        if (currentMovementFacing == MovementFacing.UP)
+        {
+            raycastCorner = new Vector3(bounds.min.x + raycastPadding, bounds.max.y, 0);
+            perpendicularDeltaBetweenRaycasts = new Vector3((2*bounds.extents.x - raycastPadding * 2) / (numberOfRaycastsPerSide.x-1), 0, 0);
+            currentRaycastsPerSide = numberOfRaycastsPerSide.y;
+            raycastDirection = Vector3.up;
+        }
+        else if (currentMovementFacing == MovementFacing.DOWN)
+        {
+            raycastCorner = new Vector3(bounds.min.x + raycastPadding, bounds.min.y, 0);
+            perpendicularDeltaBetweenRaycasts = new Vector3((2*bounds.extents.x - raycastPadding * 2) / (numberOfRaycastsPerSide.x-1), 0, 0);
+            currentRaycastsPerSide = numberOfRaycastsPerSide.y;
+            raycastDirection = Vector3.down;
+        }
+        else if (currentMovementFacing == MovementFacing.LEFT)
+        {
+            raycastCorner = new Vector3(bounds.min.x, bounds.min.y + raycastPadding, 0);
+            perpendicularDeltaBetweenRaycasts = new Vector3(0, (2 * bounds.extents.y - raycastPadding * 2) / (numberOfRaycastsPerSide.y-1), 0);
+            currentRaycastsPerSide = numberOfRaycastsPerSide.x;
+            raycastDirection = Vector3.left;
+        }
+        else if (currentMovementFacing == MovementFacing.RIGHT)
+        {
+            raycastCorner = new Vector3(bounds.max.x, bounds.min.y + raycastPadding, 0);
+            perpendicularDeltaBetweenRaycasts = new Vector3(0, (2*  bounds.extents.y - raycastPadding * 2) / (numberOfRaycastsPerSide.y-1), 0);
+            currentRaycastsPerSide = numberOfRaycastsPerSide.x;
+            raycastDirection = Vector3.right;
+        }
+
+        List<GameObject> objectsIAmFacing = new List<GameObject>();
+        for (int raycastCount = 0; raycastCount<currentRaycastsPerSide; raycastCount++)
+        {
+            Vector2 origin = raycastCorner + perpendicularDeltaBetweenRaycasts * raycastCount;
+            RaycastHit2D[] hits = Physics2D.RaycastAll(origin, raycastDirection, raycastDistance, objectLayers);
+            Debug.DrawRay(origin, raycastDirection * raycastDistance, Color.blue);
+            foreach (RaycastHit2D hit in hits)
+            {
+                if (objectsIAmFacing.Contains(hit.transform.gameObject) == false)
+                {
+                    objectsIAmFacing.Add(hit.transform.gameObject);
+                }
+            }
+        }
+        return objectsIAmFacing;
+    }
 }
