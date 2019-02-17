@@ -3,9 +3,10 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 
+/* This is an editor script that allows you to bulk-set the pivot point of multiple sprites in the same spritesheet */
+
 public class MenuItems : MonoBehaviour
 {
-
     [MenuItem("Sprites/Set Pivot(s)")]
     static void SetPivots()
     {
