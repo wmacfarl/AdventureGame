@@ -7,9 +7,7 @@ using UnityEngine;
  * This script should be on all objects that can be picked-up or put down.
  * 
  * In order to draw the picked-up object on top of the player who is carrying it, this script requires that your project have
- * two sorting layers named:
- *   "Foreground" and
- *   "Background"
+ * a sorting layer named "Foreground" 
  *   
  * Objects that can be interacted with should be set to the "Objects" physics layer.
  */
@@ -29,6 +27,7 @@ public class PickupableScript : MonoBehaviour
     public void GetPickedUp(GameObject pickerUpperGameObject, Vector2 carryOffset)
     {
         transform.parent = pickerUpperGameObject.transform;
+        GetComponent<SpriteRenderer>().sortingLayerName = "Foreground";
         collider.enabled = false;
         transform.localPosition = carryOffset;
     }
@@ -46,9 +45,10 @@ public class PickupableScript : MonoBehaviour
     public bool CanIBePutDown(Vector2 placeDistance)
     {
         Vector2 carryPosition = transform.localPosition;
+        Vector3 collisionPadding = new Vector3(Physics2D.defaultContactOffset * 3, Physics2D.defaultContactOffset * 3, 0);
         transform.localPosition = placeDistance;
         collider.enabled = true;
-        Collider2D[] overlappingColliders = Physics2D.OverlapAreaAll(collider.bounds.min, collider.bounds.max);
+        Collider2D[] overlappingColliders = Physics2D.OverlapAreaAll(collider.bounds.min+collisionPadding, collider.bounds.max-collisionPadding);
         collider.enabled = false;
 
         foreach (Collider2D overlappingCollider in overlappingColliders)

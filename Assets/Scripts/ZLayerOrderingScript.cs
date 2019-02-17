@@ -5,7 +5,9 @@ using UnityEngine;
 /* This sprite handles the z-ordering of objects and characters based on their y-position.  Objects higher on the y-axis should be occluded
  * by objects lower on the y-axis to create an illusion of perspective.
  * 
- * Put this script on any GameObject that has a sprite that is larger then it's collider.
+ * Put this script on any GameObject that the player can stand adjacent to and below or that has a collider smaller than its sprite.
+ * 
+ * This assumes that the origin/pivot for the sprite is the same for all objects.  This should be bottom-center for other scripts in the project.
  */
 
 [RequireComponent(typeof(SpriteRenderer))]

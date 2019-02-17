@@ -278,7 +278,7 @@ public class PlayerControlScript : MonoBehaviour
         //Turn the collider back off in case our placement fails for some reason and we end up still holding the object.
         objectIAmCarrying.GetComponent<BoxCollider2D>().enabled = false;
 
-        return placeDistance + Physics2D.defaultContactOffset * 2.01f;
+        return placeDistance;
     }
 
     //Returns true if there is space in front of me to place the object I am holding
