@@ -165,6 +165,23 @@ public class PlayerControlScript : MonoBehaviour
         }
     }
 
+    GameObject GetNpcToTalkTo()
+    {
+        List<GameObject> ObjectsIAmFacing = GetObjectsIAmFacing();
+        GameObject closetNPC = null;
+        float closestNpcDistance = 10000;
+        foreach (GameObject objectIAmFacing in ObjectsIAmFacing)
+        {
+            float distanceBetweenMeAndObject = Vector2.SqrMagnitude(transform.position - objectIAmFacing.transform.position);
+            if (objectIAmFacing.GetComponent<ConversationScript>() != null && distanceBetweenMeAndObject < closestNpcDistance)
+            {
+                closestNpcDistance = distanceBetweenMeAndObject;
+                closetNPC = objectIAmFacing;
+            }
+        }
+        return closetNPC;
+    }
+
     //Primary action interacts with whatever is in front of us.  If that object is Pickupable, we pick it up.  If we are holding an object
     //this places it on the ground in front of us if there is room.
     public void PerformPrimaryAction()
@@ -175,6 +192,16 @@ public class PlayerControlScript : MonoBehaviour
             if (objectToPickUp != null)
             {
                 StartCoroutine(BeginLift(objectToPickUp));
+            }
+            else
+            {
+                GameObject npcToTalkTo = GetNpcToTalkTo();
+                Debug.Log("here");
+                if (npcToTalkTo != null)
+                {
+                    Debug.Log("here.....");
+                    npcToTalkTo.GetComponent<ConversationScript>().GetTalkedTo();
+                }
             }
         }
         else

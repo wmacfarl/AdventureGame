@@ -1,0 +1,60 @@
+lavalamp,player,Is that a lava lamp?,3
+lavalamp,computer,yeah,2
+lavalamp,computer,They came back into fashion very briefly before we left,5
+lavalamp,player,Well~ I hope they come back around,4
+lavalamp,player,in the mean time~ it'll look awesome in my new place,5
+lavalamp,computer,press space to pick it up,3
+fridge,player,Whoa~ a mini fridge! ,3
+fridge,computer,It's not just a mini fridge,4
+fridge,computer,It's a complete autosustenance unit,4
+fridge,player,It makes food?,3
+fridge,computer,Yep!,2
+fridge,player,That'll make living 10 years much easier,5
+fridge,computer,press space to pick it up,3
+couch,player,Yes!,2
+couch,player,This will be perfect for my place,4
+couch,computer,It looks heavy,3
+couch,player,Yeah~ maybe someone can help me move it,4
+couch,computer,good luck.  ,2
+couch,computer,the archives call helping a friend move a couch,4
+couch,computer,the least pleasant activity one can engage in,4
+2,player,hey who are you,2
+2,friend,I'm Friend,2
+2,player,you want to come to my new sweet pad?,3
+2,player,we can hang out,3
+2,friend,It's really cold out there,3
+2,friend,so I'm staying here by the reactor,4
+2,player,It's not that cold,3
+2,friend,I'm used to ambient temperatures around 1000 degrees,5
+2,player,Maybe I can find you something to stay warm out here,5
+2,friend,That would be great,3
+2,player,great~ I'll be back as soon as I can,3
+intro,player,Ugh,3
+intro,computer,Oh~ you're awake!,3
+intro,player,Where did I land?,3
+intro,computer,This is the starship dromedary!,4
+intro,computer,I'm so excited,2
+intro,computer,I never get to talk to anyone,3
+intro,player,Why not?,2
+intro,computer,This is a completely automated ship!,4
+intro,computer,There's no crew,2
+intro,computer,or passengers,2
+intro,player,oh well,2
+intro,player,When is the next time this ship lands,4
+intro,computer,10 years!  ,3
+intro,player,well~ I suppose I should look around,3
+intro,player,And make this place a little more homey,4
+intro,computer,As long as you don't take anything off the ship,4
+intro,computer,You can bring things back to this room,4
+intro,player,Sounds good.,2
+intro,computer,press the arrow keys to move,3
+4,player,I found you a coat and hat!,2
+4,friend,Oh thanks!,2
+4,friend,I'll put it on right now,2
+4,friendDressed,How do I look?,2
+4,player,great!,2
+4,player,Want to help me move a couch?,2
+4,friendDressed,Not really~ but sure!,2
+coat,player,Hey~ a hat and coat,3
+coat,computer,That'll be perfect for keeping Friend wark,5
+coat,player,I'll bring it to him now,3
