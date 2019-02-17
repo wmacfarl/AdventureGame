@@ -29,6 +29,7 @@ public class PlayerControlScript : MonoBehaviour
     public float raycastDistance;
     public LayerMask objectLayers;
     public float pickUpAnimationLength;
+    public float putDownAnimationLength;
     public Vector2 carryOffset = new Vector2(0, 1.3f);
 
     void Start()
@@ -41,6 +42,7 @@ public class PlayerControlScript : MonoBehaviour
         currentMovementFacing = MovementFacing.RIGHT;
         animator.EnterAnimationState(currentMovementState, currentMovementFacing, currentCarryingState );
         animator.liftCycleDuration = pickUpAnimationLength;
+        animator.placeCycleDuration = putDownAnimationLength;
     }
 
     void Update()
@@ -137,8 +139,82 @@ public class PlayerControlScript : MonoBehaviour
         }
         else
         {
-
+            if (CanIPlaceObject())
+            {
+                StartCoroutine(BeginPlaceObject());
+            }
         }
+    }
+
+    IEnumerator BeginPlaceObject()
+    {
+        canTakeInput = false;
+        currentMovementState = MovementState.PLACING;
+        yield return new WaitForSeconds(putDownAnimationLength);
+        CompletePlaceObject();
+        canTakeInput = true;
+    }
+
+    void CompletePlaceObject()
+    {
+        float putDownDistance = GetPlaceDistance();
+        objectIAmCarrying.GetComponent<PickupableScript>().GetPutDown(MovementFacingToVector2(currentMovementFacing)*putDownDistance);
+        currentCarryingState = CarryingState.NOT_CARRYING;
+        currentMovementState = MovementState.IDLING;
+        objectIAmCarrying = null;
+    }
+
+
+    Vector2 MovementFacingToVector2(MovementFacing facing)
+    {
+        if (facing == MovementFacing.RIGHT)
+        {
+            return Vector2.right;
+        }else if (facing == MovementFacing.LEFT)
+        {
+            return Vector2.left;
+        }
+        else if (facing == MovementFacing.UP)
+        {
+            return Vector2.up;
+        }
+        else if (facing == MovementFacing.DOWN)
+        {
+            return Vector2.down;
+        }
+        else
+        {
+            return new Vector2();
+        }
+    }
+
+    float GetPlaceDistance()
+    {
+        float placeDistance = 0;
+        objectIAmCarrying.GetComponent<BoxCollider2D>().enabled = true; ;
+        if (currentMovementFacing == MovementFacing.RIGHT || currentMovementFacing == MovementFacing.LEFT)
+        {
+            placeDistance = collider.bounds.extents.x + objectIAmCarrying.GetComponent<BoxCollider2D>().bounds.extents.x;
+        }
+        else
+        {
+            if (currentMovementFacing == MovementFacing.UP)
+            {
+                placeDistance = collider.bounds.extents.y * 2;
+            }
+            else if (currentMovementFacing == MovementFacing.DOWN)
+            {
+                placeDistance = objectIAmCarrying.GetComponent<BoxCollider2D>().bounds.extents.y*2;
+                Debug.Log("down ... placeDistance = " + placeDistance);
+            }
+        }
+        objectIAmCarrying.GetComponent<BoxCollider2D>().enabled = false;
+        return placeDistance *1.1f;
+    }
+
+    bool CanIPlaceObject()
+    {
+        return objectIAmCarrying.GetComponent<PickupableScript>().CanIBePutDown(MovementFacingToVector2(currentMovementFacing ) * GetPlaceDistance());
     }
 
     GameObject GetObjectIShouldPickUp()
@@ -194,7 +270,7 @@ public class PlayerControlScript : MonoBehaviour
         }
         else
         {
-            if (currentMovementState != MovementState.LIFTING)
+            if (currentMovementState != MovementState.LIFTING && currentMovementState != MovementState.PLACING)
             {
                 currentMovementState = MovementState.IDLING;
             }

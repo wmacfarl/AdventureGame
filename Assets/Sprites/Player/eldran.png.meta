@@ -54,26 +54,26 @@ TextureImporter:
     21300098: lift_up_2
     21300100: lift_up_3
     21300102: lift_right_4
-    21300104: lift_up_5
-    21300106: lift_up_6
-    21300108: lift_right_7
+    21300104: place_up_1
+    21300106: place_up_2
+    21300108: place_right_3
     21300110: lift_up_1
     21300112: lift_up_4
-    21300114: lift_up_7
+    21300114: place_up_3
     21300116: lift_left_1
     21300118: lift_left_2
     21300120: lift_left_3
     21300122: lift_left_4
-    21300124: lift_left_5
-    21300126: lift_left_6
-    21300128: lift_left_7
+    21300124: place_left_1
+    21300126: place_left_2
+    21300128: place_left_3
     21300130: lift_down_1
     21300132: lift_down_2
     21300134: lift_down_3
     21300136: lift_down_4
-    21300138: lift_down_5
-    21300140: lift_down_6
-    21300142: lift_down_7
+    21300138: place_down_1
+    21300140: place_down_2
+    21300142: place_down_3
     21300144: eldran_24
     21300146: eldran_37
     21300148: walk_left_2
@@ -98,8 +98,8 @@ TextureImporter:
     21300186: walk_carry_up_7
     21300188: walk_carry_right_7
     21300190: lift_right_3
-    21300192: lift_right_5
-    21300194: lift_right_6
+    21300192: place_right_1
+    21300194: place_right_2
     21300196: walk_left_7
     21300198: walk_up_7
     21300200: walk_right_7
@@ -1259,7 +1259,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lift_up_5
+      name: place_up_1
       rect:
         serializedVersion: 2
         x: 100
@@ -1279,7 +1279,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lift_up_6
+      name: place_up_2
       rect:
         serializedVersion: 2
         x: 124
@@ -1299,7 +1299,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lift_right_7
+      name: place_right_3
       rect:
         serializedVersion: 2
         x: 150
@@ -1359,7 +1359,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lift_up_7
+      name: place_up_3
       rect:
         serializedVersion: 2
         x: 148
@@ -1459,7 +1459,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lift_left_5
+      name: place_left_1
       rect:
         serializedVersion: 2
         x: 98
@@ -1479,7 +1479,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lift_left_6
+      name: place_left_2
       rect:
         serializedVersion: 2
         x: 122
@@ -1499,7 +1499,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lift_left_7
+      name: place_left_3
       rect:
         serializedVersion: 2
         x: 147
@@ -1599,7 +1599,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lift_down_5
+      name: place_down_1
       rect:
         serializedVersion: 2
         x: 100
@@ -1619,7 +1619,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lift_down_6
+      name: place_down_2
       rect:
         serializedVersion: 2
         x: 124
@@ -1639,7 +1639,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lift_down_7
+      name: place_down_3
       rect:
         serializedVersion: 2
         x: 148
@@ -2099,7 +2099,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lift_right_5
+      name: place_right_1
       rect:
         serializedVersion: 2
         x: 102
@@ -2119,7 +2119,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lift_right_6
+      name: place_right_2
       rect:
         serializedVersion: 2
         x: 126

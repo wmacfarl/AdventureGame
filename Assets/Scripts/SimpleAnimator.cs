@@ -19,6 +19,12 @@ public class SimpleAnimator : MonoBehaviour
     public List<Sprite> liftLeftSprites;
     public List<Sprite> liftRightSprites;
 
+    public List<Sprite> placingUpSprites;
+    public List<Sprite> placingDownSprites;
+    public List<Sprite> placingLeftSprites;
+    public List<Sprite> placingRightSprites;
+
+
     public List<Sprite> idleLeftSprites;
     public List<Sprite> idleUpSprites;
     public List<Sprite> idleDownSprites;
@@ -32,6 +38,7 @@ public class SimpleAnimator : MonoBehaviour
 
     public float walkCycleDuration;
     public float idleCycleDuration;
+    public float placeCycleDuration;
     public float liftCycleDuration;
 
     int currentAnimationFrame;
@@ -58,6 +65,7 @@ public class SimpleAnimator : MonoBehaviour
         IDLING = 0,
         WALKING = 1,
         LIFTING = 2,
+        PLACING = 3
     }
 
     public enum MovementFacing
@@ -104,6 +112,9 @@ public class SimpleAnimator : MonoBehaviour
         else if (movementState == MovementState.WALKING)
         {
             return walkCycleDuration;
+        }else if (movementState == MovementState.PLACING)
+        {
+            return placeCycleDuration;
         }
         else
         {
@@ -158,7 +169,7 @@ public class SimpleAnimator : MonoBehaviour
                 return walkDownSprites;
             }
 
-            else if (movementState == MovementState.WALKING && movementFacing == MovementFacing.LEFT)
+            else if (movementState == MovementState.LIFTING && movementFacing == MovementFacing.LEFT)
             {
                 return liftLeftSprites;
             }
@@ -209,6 +220,23 @@ public class SimpleAnimator : MonoBehaviour
             else if (movementState == MovementState.WALKING && movementFacing == MovementFacing.DOWN)
             {
                 return walkCarryDownSprites;
+            }
+
+            else if (movementState == MovementState.PLACING && movementFacing == MovementFacing.LEFT)
+            {
+                return placingLeftSprites;
+            }
+            else if (movementState == MovementState.PLACING && movementFacing == MovementFacing.RIGHT)
+            {
+                return placingRightSprites;
+            }
+            else if (movementState == MovementState.PLACING && movementFacing == MovementFacing.UP)
+            {
+                return placingUpSprites;
+            }
+            else if (movementState == MovementState.PLACING && movementFacing == MovementFacing.DOWN)
+            {
+                return placingDownSprites;
             }
         }
 
