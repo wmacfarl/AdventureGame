@@ -196,10 +196,9 @@ public class PlayerControlScript : MonoBehaviour
             else
             {
                 GameObject npcToTalkTo = GetNpcToTalkTo();
-                Debug.Log("here");
+
                 if (npcToTalkTo != null)
                 {
-                    Debug.Log("here.....");
                     npcToTalkTo.GetComponent<ConversationScript>().GetTalkedTo();
                 }
             }

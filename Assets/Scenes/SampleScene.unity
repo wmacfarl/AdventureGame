@@ -537,9 +537,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HUDCanvas: {fileID: 0}
-  ConversationCSVs: []
-  playerPortrait: {fileID: 0}
-  emptyPortrait: {fileID: 0}
+  emptyPortraitImage: {fileID: 21300000, guid: 680b8c53f24964146a70a3fb477c2f96, type: 3}
 --- !u!1 &929542633
 GameObject:
   m_ObjectHideFlags: 0
@@ -682,7 +680,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
-    oldSize: {x: 1, y: 1.6}
+    oldSize: {x: 3.125, y: 5}
     newSize: {x: 1, y: 1.6}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -766,9 +764,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ConversationManager: {fileID: 0}
-  MyPortrait: {fileID: 0}
-  myCsvID: 0
-  nextDialogID: 
+  MyPortrait: {fileID: 21300000, guid: c48c74342359d4f56897df4e0f5742b2, type: 3}
+  myConversations:
+  - Portraits:
+    - {fileID: 21300000, guid: c48c74342359d4f56897df4e0f5742b2, type: 3}
+    - {fileID: 21300000, guid: 16f564753bf1a4e38a6ef9d152a89349, type: 3}
+    DialogLines:
+    - portraitIndex: 1
+      text: Hi!  Who are you?
+      duration: 0.5
+    - portraitIndex: 0
+      text: I'm Friend!  Let's be friends!
+      duration: 0.5
+    currentLineIndex: 0
+  nextConversationIndex: 0
 --- !u!1 &1253591758
 GameObject:
   m_ObjectHideFlags: 0
@@ -1242,6 +1251,52 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7115036464639300397, guid: 595bbebe17ec3b64cbd41210e4bcae31,
+        type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: 5b14d0c8a391dc043b5ec4bdfbb32609,
+        type: 3}
+    - target: {fileID: 7115036464156497162, guid: 595bbebe17ec3b64cbd41210e4bcae31,
+        type: 3}
+      propertyPath: m_UiScaleMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7115036464156497162, guid: 595bbebe17ec3b64cbd41210e4bcae31,
+        type: 3}
+      propertyPath: m_ReferenceResolution.x
+      value: 960
+      objectReference: {fileID: 0}
+    - target: {fileID: 7115036464156497162, guid: 595bbebe17ec3b64cbd41210e4bcae31,
+        type: 3}
+      propertyPath: m_ReferenceResolution.y
+      value: 540
+      objectReference: {fileID: 0}
+    - target: {fileID: 7115036464156497162, guid: 595bbebe17ec3b64cbd41210e4bcae31,
+        type: 3}
+      propertyPath: m_MatchWidthOrHeight
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7115036465987821060, guid: 595bbebe17ec3b64cbd41210e4bcae31,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -190
+      objectReference: {fileID: 0}
+    - target: {fileID: 7115036465432874727, guid: 595bbebe17ec3b64cbd41210e4bcae31,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -190
+      objectReference: {fileID: 0}
+    - target: {fileID: 7115036465909803235, guid: 595bbebe17ec3b64cbd41210e4bcae31,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -190
+      objectReference: {fileID: 0}
+    - target: {fileID: 7115036464639300398, guid: 595bbebe17ec3b64cbd41210e4bcae31,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -190
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7115036465908994117, guid: 595bbebe17ec3b64cbd41210e4bcae31, type: 3}

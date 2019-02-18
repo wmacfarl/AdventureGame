@@ -8,121 +8,78 @@ public class ConversationManagerScript : MonoBehaviour
 {
     public GameObject HUDCanvas;
 
-    public List<TextAsset> ConversationCSVs;
-    public List<Csv> DialogObjects;
-
-    GameObject speakerImage;
-    Sprite currentImage;
-
+    GameObject speakerImageContainerGameobject;
     GameObject dialogText;
-
-    public Sprite playerPortrait;
-    public Sprite emptyPortrait;
-
-    string currentDialogID; //Used to make sure we don't interrupt ourselves
-    int currentDialogLineNumber;
+    public Sprite emptyPortraitImage;
+    Conversation currentConversation;
     List<List<string>> currentDialog = new List<List<string>>();
 
     float dialogLineStartTime;
     float currentDialogLineDuration;
 
-        public bool isDialogActive()
+    public bool isDialogActive()
     {
-        return (currentDialogID != "");
+        return (currentConversation != null);
     }
 
     // Start is called before the first frame update
     void Start()
     {
       HUDCanvas = GameObject.Find("ConversationHudCanvas");
-      float dialogLineStartTime = 0;
-      float currentDialogLineDuration = 0;
-      speakerImage = HUDCanvas.transform.Find("Speaker Image").gameObject;
+      speakerImageContainerGameobject = HUDCanvas.transform.Find("Speaker Image").gameObject;
       dialogText = HUDCanvas.transform.Find("DialogText").gameObject;
-      SetupDialog();
+        EndConversation();
     }
 
-    void SetupDialog()
+
+    public void StartConversation(Conversation conversation)
     {
-        foreach (TextAsset text in ConversationCSVs)
+        currentConversation = conversation;
+        currentConversation.currentLineIndex = 0;
+        StartCoroutine(DisplayNextDialogLine());
+    }
+
+    IEnumerator DisplayNextDialogLine()
+    {
+        if (currentConversation.currentLineIndex < currentConversation.DialogLines.Count)
         {
-            DialogObjects.Add(new Csv(text));
+            DialogLine currentLine = currentConversation.DialogLines[currentConversation.currentLineIndex];
+            SetDialogText(currentLine.text);
+            SetDialogPortrait(currentConversation.Portraits[currentLine.portraitIndex]);
+            yield return new WaitForSeconds(currentLine.duration);
+            currentConversation.currentLineIndex++;
+            StartCoroutine(DisplayNextDialogLine());
+        }
+        else
+        {
+            EndConversation();
         }
     }
 
-
-    void Update()
+    void EndConversation()
     {
-      updateDialog();
-    }
-
-    public void StartDialog(int CsvIndex, string dialogID)
-    {
-        Csv dialogObject = DialogObjects[CsvIndex];
-      if (currentDialogID == "")
-      {
-        currentDialogID = dialogID;
-        currentDialogLineNumber = 0;
-        currentDialog = new List<List<string>>();
-        for (int i=0;i<dialogObject.contents.Count;i++)
+        SetDialogText("");
+        SetDialogPortrait(emptyPortraitImage);
+        if (currentConversation != null)
         {
-          if (dialogObject.contents[i][0] == dialogID)
-          {
-            currentDialog.Add(dialogObject.contents[i]);
-          }
+            currentConversation.currentLineIndex = 0;
         }
-        if (currentDialog.Count > 0)
-        {
-          startLine();
-        } else {
-          endDialog();
-        }
-      }
+        currentConversation = null;
     }
 
-    void SetPicture()
+    void SetDialogPortrait(Sprite sprite)
     {
-
+        speakerImageContainerGameobject.GetComponent<Image>().sprite = sprite;
     }
 
-    void startLine()
+    void SetDialogText(string text)
     {
-      SetPicture();
-      dialogText.GetComponent<Text>().text = currentDialog[currentDialogLineNumber][2];
-
-        //set time
-      currentDialogLineDuration = float.Parse(currentDialog[currentDialogLineNumber][3]);
-      dialogLineStartTime = Time.time;
-
+        dialogText.GetComponent<Text>().text = text;
     }
 
-    void updateDialog()
-    {
-      if (currentDialogID != "")
-      {
-        if (Time.time >= dialogLineStartTime + currentDialogLineDuration)
-        {
-          currentDialogLineNumber++;
-          if (currentDialogLineNumber > currentDialog.Count - 1)
-          {
-            endDialog();
-          } else {
-            startLine();
-          }
-        }
-      }
-    }
-
-    void endDialog()
-    {
-      currentDialogID = "";
-      dialogLineStartTime = 0;
-      speakerImage.GetComponent<Image>().sprite = emptyPortrait;
-      currentDialogLineDuration = 0;
-      currentDialogLineNumber = 0;
-      dialogText.GetComponent<Text>().text = "";
-    }
 }
+
+
 
 public class Csv
 {
