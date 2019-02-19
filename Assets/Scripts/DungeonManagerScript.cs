@@ -17,7 +17,20 @@ public class DungeonManagerScript : MonoBehaviour
     public float maximumRegionArea;
     public float chanceToStopSplitting;
     
+    public class DungeonCorridor
+    {
+        DungeonRoom room1;
+        DungeonRoom room2;
+        Rect xCorridorFootprint;
+        Rect yCorridorFootprint;
+    }
 
+    public class DungeonRoom
+    {
+        List<DungeonCorridor> corridors;
+        DungeonRegion containingRegion;
+        Rect roomFootprint;
+    }
 
     public class DungeonRegion
     {
@@ -166,15 +179,18 @@ public class DungeonManagerScript : MonoBehaviour
         {
             if (region.Region1 == null && region.Region2 == null)
             {
+                Vector2 dimensionsToSubtract = new Vector2(region.dimensions.x * Random.Range(.1f, .4f), region.dimensions.y * Random.Range(.1f, .4f));
                 GameObject newRoom = GameObject.Instantiate(RoomPrefab);
                 newRoom.transform.position = region.position+region.dimensions*.5f;
-                Vector2 dimensionsToSubtract = new Vector2(region.dimensions.x * Random.Range(.1f, .6f),
-                region.dimensions.y * Random.Range(.1f, .6f));
                 BoxCollider2D collider = newRoom.GetComponent<BoxCollider2D>();
                 collider.size = region.dimensions - dimensionsToSubtract;
                 collider.size = RoundVectorComponents(collider.size);
                 newRoom.transform.position = RoundVectorComponents(newRoom.transform.position);
                 newRoom.transform.parent = roomsGameobject.transform;
+                newRoom.GetComponent<SpriteRenderer>().size = collider.size;
+                region.dimensions -= dimensionsToSubtract;
+                region.position += dimensionsToSubtract * .5f;
+
                 DungeonRooms.Add(newRoom);
             }
             else
@@ -197,13 +213,39 @@ public class DungeonManagerScript : MonoBehaviour
 
     GameObject GenerateCorridorBetweenRegions(DungeonRegion region1, DungeonRegion region2)
     {
-        Vector2 region1Center = region1.position + .5f * region1.dimensions;
-        Vector2 region2Center = region2.position + .5f * region2.dimensions;
+        Vector2 corridorStartingPoint1 = region1.position + .5f * region1.dimensions;
+        if (region1.Region1 != null)
+        {
+            if (Random.value > .5f)
+            {
+                corridorStartingPoint1 = region1.Region1.position + .5f * region1.Region1.dimensions;
+            }
+            else
+            {
+                corridorStartingPoint1 = region1.Region2.position + .5f * region1.Region2.dimensions;
+            }
+        }
+
+
+        Vector2 corridorStartingPoint2 = region2.position + .5f * region2.dimensions;
+        if (region2.Region1 != null)
+        {
+            if (Random.value > .5f)
+            {
+                corridorStartingPoint2 = region2.Region1.position + .5f * region2.Region1.dimensions;
+            }
+            else
+            {
+                corridorStartingPoint2 = region2.Region2.position + .5f * region2.Region2.dimensions;
+            }
+        }
+
+        Debug.DrawLine(corridorStartingPoint1, corridorStartingPoint2, Color.green, 2000);
 
         GameObject newCorridor = GameObject.Instantiate(CorridorPrefab);
         BoxCollider2D boxCollider = newCorridor.GetComponent<BoxCollider2D>();
-        newCorridor.transform.position = (region1Center + region2Center) / 2;
-        boxCollider.size = region2Center - region1Center;
+        newCorridor.transform.position = (corridorStartingPoint1 + corridorStartingPoint2) / 2;
+        boxCollider.size = corridorStartingPoint2 - corridorStartingPoint1;
         if (boxCollider.size.x < 1)
         {
             boxCollider.size = new Vector2(1, boxCollider.size.y);
@@ -215,6 +257,7 @@ public class DungeonManagerScript : MonoBehaviour
 
         newCorridor.transform.position = RoundVectorComponents(newCorridor.transform.position);
         boxCollider.size = RoundVectorComponents(boxCollider.size);
+        newCorridor.GetComponent<SpriteRenderer>().size = boxCollider.size;
         return newCorridor;
     }
 

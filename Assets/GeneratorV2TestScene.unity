@@ -224,11 +224,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MinimumAreaForDungeonRoom: 16
-  MaximumAreaForDungeonRoom: 300
+  MaximumAreaForDungeonRoom: 500
   MinimumLengthForDungeonRoom: 8
   SizeOfDungeonToGenerate: {x: 100, y: 100}
-  PercentChanceToStopSplittingRoom: 0.1
-  MinimumDepthToStopSplitting: 10
+  PercentChanceToStopSplittingRoom: 0.2
+  MinimumDepthToStopSplitting: 4
 --- !u!4 &1652722480
 Transform:
   m_ObjectHideFlags: 0
@@ -238,59 +238,6 @@ Transform:
   m_GameObject: {fileID: 1652722478}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1708991076
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1708991078}
-  - component: {fileID: 1708991077}
-  m_Layer: 0
-  m_Name: Dungeon
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1708991077
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1708991076}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d6d1567c750bec408863a1881244e0a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RoomPrefab: {fileID: 4605770983221325106, guid: 73915040fff7d684ca8e19cab5414b99,
-    type: 3}
-  CorridorPrefab: {fileID: 7445891351073060453, guid: d4ba28d334cda6a4cb47e5003a25fe17,
-    type: 3}
-  minimumWidthToHeightRatio: 0.25
-  minimumRegionSize: {x: 8, y: 8}
-  DungeonSize: {x: 100, y: 100}
-  minimumRegionAreaToSplit: 16
-  maximumRegionArea: 500
-  chanceToStopSplitting: 0.15
---- !u!4 &1708991078
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1708991076}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.74237436, y: 3.9006298, z: 0.076171875}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
