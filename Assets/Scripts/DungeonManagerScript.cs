@@ -2,16 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class DungeonManagerScript : MonoBehaviour
 {
     public GameObject RoomPrefab;
+    public GameObject CorridorPrefab;
     public float minimumWidthToHeightRatio = .25f;
     List<DungeonRegion> DungeonRegions;
     public Vector2 minimumRegionSize;
     public Vector2 DungeonSize;
+    List<GameObject> DungeonRooms;
+    List<GameObject> DungeonCorridors;
     public float minimumRegionAreaToSplit;
     public float maximumRegionArea;
     public float chanceToStopSplitting;
+    
 
 
     public class DungeonRegion
@@ -101,7 +106,6 @@ public class DungeonManagerScript : MonoBehaviour
                 {
                     return false;
                 }
-                Debug.Log("Negative Size!");
                 Region1 = new DungeonRegion(position, new Vector2(dimensions.x, size1), minimumWidthToHeightRatio, minimumRegionSize);
                 Region2 = new DungeonRegion(position + new Vector2(0, size1), new Vector2(dimensions.x, size2),
                                             minimumWidthToHeightRatio, minimumRegionSize);
@@ -113,6 +117,8 @@ public class DungeonManagerScript : MonoBehaviour
 
     private void Start()
     {
+        DungeonCorridors = new List<GameObject>();
+        DungeonRooms = new List<GameObject>();
         DungeonRegions = new List<DungeonRegion>();
         DungeonRegion rootRegion = new DungeonRegion(new Vector2(), DungeonSize, minimumWidthToHeightRatio, minimumRegionSize);
         DungeonRegions.Add(rootRegion);
@@ -154,23 +160,64 @@ public class DungeonManagerScript : MonoBehaviour
 
     void GenerateDungeonGameObjects()
     {
+        GameObject roomsGameobject = GameObject.Instantiate(new GameObject());
+        roomsGameobject.name = "Rooms";
         foreach (DungeonRegion region in DungeonRegions)
         {
             if (region.Region1 == null && region.Region2 == null)
             {
                 GameObject newRoom = GameObject.Instantiate(RoomPrefab);
-                newRoom.transform.position = region.position;
-                newRoom.transform.localScale = region.dimensions*Random.Range(.6f,.9f);
-            }else if (region.Region1 != null && region.Region2 == null)
-            {
-                Debug.Log("only region2 is null!");
+                newRoom.transform.position = region.position+region.dimensions*.5f;
+                Vector2 dimensionsToSubtract = new Vector2(region.dimensions.x * Random.Range(.1f, .6f),
+                region.dimensions.y * Random.Range(.1f, .6f));
+                BoxCollider2D collider = newRoom.GetComponent<BoxCollider2D>();
+                collider.size = region.dimensions - dimensionsToSubtract;
+                collider.size = RoundVectorComponents(collider.size);
+                newRoom.transform.position = RoundVectorComponents(newRoom.transform.position);
+                newRoom.transform.parent = roomsGameobject.transform;
+                DungeonRooms.Add(newRoom);
             }
-        else if (region.Region2 != null && region.Region1 == null)
-        {
-            Debug.Log("only region1 is null!");
+            else
+            {
+                GameObject corridor = GenerateCorridorBetweenRegions(region.Region1, region.Region2);
+//                DungeonCorridors.Add(corridor);
+            }
         }
     }
 
-}
+    Vector2 RoundVectorComponents(Vector2 vector)
+    {
+        return new Vector2(Mathf.Round(vector.x), Mathf.Round(vector.y));
+    }
+
+    Vector3 RoundVectorComponents(Vector3 vector)
+    {
+        return new Vector3(Mathf.Round(vector.x), Mathf.Round(vector.y));
+    }
+
+    GameObject GenerateCorridorBetweenRegions(DungeonRegion region1, DungeonRegion region2)
+    {
+        Vector2 region1Center = region1.position + .5f * region1.dimensions;
+        Vector2 region2Center = region2.position + .5f * region2.dimensions;
+
+        GameObject newCorridor = GameObject.Instantiate(CorridorPrefab);
+        BoxCollider2D boxCollider = newCorridor.GetComponent<BoxCollider2D>();
+        newCorridor.transform.position = (region1Center + region2Center) / 2;
+        boxCollider.size = region2Center - region1Center;
+        if (boxCollider.size.x < 1)
+        {
+            boxCollider.size = new Vector2(1, boxCollider.size.y);
+        }
+        if (boxCollider.size.y < 1)
+        {
+            boxCollider.size = new Vector2(boxCollider.size.x, 1);
+        }
+
+        newCorridor.transform.position = RoundVectorComponents(newCorridor.transform.position);
+        boxCollider.size = RoundVectorComponents(boxCollider.size);
+        return newCorridor;
+    }
+
+
 }
 
