@@ -107,8 +107,8 @@ public class DungeonGeneratorScript : MonoBehaviour
 
             if (DoRectsTouchInX(room1.ContainingRegion.RegionFootprint, room2.ContainingRegion.RegionFootprint, .01f))
             {
-                float minY = Mathf.Max(room1.roomFootprint.yMin, room2.roomFootprint.yMin) + 1;
-                float maxY = Mathf.Min(room1.roomFootprint.yMax, room2.roomFootprint.yMax) - 1;
+                float minY = Mathf.Max(room1.roomFootprint.yMin, room2.roomFootprint.yMin+1.5f);
+                float maxY = Mathf.Min(room1.roomFootprint.yMax, room2.roomFootprint.yMax-1.5f);
                 if (maxY-minY < 2)
                 {
                     Debug.Log("too close to connect");
@@ -133,8 +133,8 @@ public class DungeonGeneratorScript : MonoBehaviour
             }
             else if (DoRectsTouchInY(room1.ContainingRegion.RegionFootprint, room2.ContainingRegion.RegionFootprint, .01f))
             {
-                float minX = Mathf.Max(room1.roomFootprint.xMin, room2.roomFootprint.xMin) + 1;
-                float maxX = Mathf.Min(room1.roomFootprint.xMax, room2.roomFootprint.xMax) - 1;
+                float minX = Mathf.Max(room1.roomFootprint.xMin, room2.roomFootprint.xMin+1.5f);
+                float maxX = Mathf.Min(room1.roomFootprint.xMax, room2.roomFootprint.xMax-1.5f);
                 if (maxX - minX < 2)
                 {
                     Debug.Log("too close to connect");
@@ -158,26 +158,26 @@ public class DungeonGeneratorScript : MonoBehaviour
             }
             else
             {
-                Debug.Log("NOT GOOD");
+                Debug.Log("Rooms are not adjacent and so cannot be connected with a corridor.");
                 Debug.DrawLine(hallwayStartingPoint, hallwayEndingPoint, Color.yellow, 20000);
             }
-            hallwayStartingPoint -= hallwayDirection;
-            hallwayEndingPoint += hallwayDirection;
-            if (room1.roomFootprint.Contains(hallwayStartingPoint) && room2.roomFootprint.Contains(hallwayEndingPoint))
-            {
-                Vector2 hallwayDimensions =  hallwayStartingPoint - hallwayEndingPoint;
-                hallwayDimensions += Vector2.Perpendicular(hallwayDirection);
-                Rect corridorRect = new Rect(hallwayStartingPoint, hallwayDimensions*-1);
-                DebugDrawRect(corridorRect, Color.yellow, 20000);
-                Debug.DrawLine(hallwayStartingPoint, hallwayEndingPoint, color, 20000);
-                return true;
-            }
-            else
-            {
-                Debug.DrawLine(hallwayStartingPoint, hallwayEndingPoint, Color.red, 20000);
-                Debug.Log("never here");
-                return false;
-            }
+
+            Vector2 hallwayDimensions =  hallwayStartingPoint - hallwayEndingPoint;
+            hallwayDimensions += Vector2.Perpendicular(hallwayDirection);
+            Rect corridorRect = new Rect(hallwayStartingPoint, hallwayDimensions*-1);
+            DungeonCorridor newCorridor = new DungeonCorridor(room1, room2, corridorRect);
+            DebugDrawRect(corridorRect, Color.yellow, 20000);
+            return true;
+        }
+
+        public void ScaleUpDungeon(float scaleFactor)
+        {
+            throw new System.Exception("Not written yet");
+        }
+
+        public void DebugDrawDungeon()
+        {
+            throw new System.Exception("Not written yet");
         }
     }
 
@@ -401,17 +401,26 @@ public class DungeonGeneratorScript : MonoBehaviour
 
     public class DungeonCorridor
     {
-        DungeonRoom[] ConnectedRooms;
-        List<DungeonCorridor> ConnectedCorridors;
-        Rect xCorridorFootprint;
-        Rect yCorridorFootprint;
+        public DungeonRoom[] ConnectedRooms;
+        public List<DungeonCorridor> ConnectedCorridors;
+        public Rect CorridorFootprint;
+
+        public DungeonCorridor(DungeonRoom room1, DungeonRoom room2, Rect footprint)
+        {
+            this.ConnectedRooms = new DungeonRoom[2];
+            this.ConnectedRooms[0] = room1;
+            this.ConnectedRooms[1] = room2;
+            this.CorridorFootprint = footprint;
+            room1.Corridors.Add(this);
+            room2.Corridors.Add(this);            
+        }
     }
 
     public class DungeonRoom
     {
         public DungeonRegion ContainingRegion;
         public List<DungeonRoom> AdjacentRooms;
-        List<DungeonCorridor> Corridors;
+        public List<DungeonCorridor> Corridors;
 
         public Rect roomFootprint;
 
@@ -420,8 +429,20 @@ public class DungeonGeneratorScript : MonoBehaviour
             this.ContainingRegion = region;
             this.roomFootprint = region.RegionFootprint;
             this.AdjacentRooms = new List<DungeonRoom>();
+            this.Corridors = new List<DungeonCorridor>();
         }
 
+        public bool AmIConnectedByACorridorTo(DungeonRoom room)
+        {
+            foreach (DungeonCorridor corridor in Corridors)
+            {
+                if (corridor.ConnectedRooms[0] == room || corridor.ConnectedRooms[1] == room)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         public bool AmIAdjacentTo(DungeonRoom roomToTest)
         {
@@ -502,7 +523,7 @@ public class DungeonGeneratorScript : MonoBehaviour
             {
                 foreach (DungeonRoom siblingRoom in siblingRegion.GetAllRoomsInRegion())
                 {
-                    if (room.AmIAdjacentTo(siblingRoom) && madeConnection == false)
+                    if (room.AmIAdjacentTo(siblingRoom) && madeConnection == false && room.AmIConnectedByACorridorTo(siblingRoom) == false)
                     {
                         if (newDungeon.CreateCorridorBetweenRooms(room, siblingRoom))
                         {
