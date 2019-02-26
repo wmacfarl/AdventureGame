@@ -223,10 +223,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 158eaf00220d1a04d8288800d8fad4fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MinimumAreaForDungeonRoom: 16
-  MaximumAreaForDungeonRoom: 500
-  MinimumLengthForDungeonRoom: 8
-  SizeOfDungeonToGenerate: {x: 100, y: 100}
+  MinimumAreaForDungeonRoom: 4
+  MaximumAreaForDungeonRoom: 150
+  MinimumLengthForDungeonRoom: 2
+  SizeOfDungeonToGenerate: {x: 25, y: 25}
   PercentChanceToStopSplittingRoom: 0.2
   MinimumDepthToStopSplitting: 4
 --- !u!4 &1652722480
