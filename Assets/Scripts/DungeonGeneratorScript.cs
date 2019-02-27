@@ -74,8 +74,8 @@ public class DungeonGeneratorScript : MonoBehaviour
 
             if (RectHelper.DoRectsTouchInX(room1.ContainingRegion.RegionFootprint, room2.ContainingRegion.RegionFootprint, .01f))
             {
-                float minY = Mathf.Max(room1.roomFootprint.yMin, room2.roomFootprint.yMin+2f);
-                float maxY = Mathf.Min(room1.roomFootprint.yMax, room2.roomFootprint.yMax-2f);
+                float minY = Mathf.Max(room1.roomFootprint.yMin, room2.roomFootprint.yMin)+1;
+                float maxY = Mathf.Min(room1.roomFootprint.yMax, room2.roomFootprint.yMax)-1;
                 if (maxY-minY < 2)
                 {
                     return false;
@@ -97,8 +97,8 @@ public class DungeonGeneratorScript : MonoBehaviour
             }
             else if (RectHelper.DoRectsTouchInY(room1.ContainingRegion.RegionFootprint, room2.ContainingRegion.RegionFootprint, .01f))
             {
-                float minX = Mathf.Max(room1.roomFootprint.xMin, room2.roomFootprint.xMin+2f);
-                float maxX = Mathf.Min(room1.roomFootprint.xMax, room2.roomFootprint.xMax-2f);
+                float minX = Mathf.Max(room1.roomFootprint.xMin, room2.roomFootprint.xMin)+1;
+                float maxX = Mathf.Min(room1.roomFootprint.xMax, room2.roomFootprint.xMax)-1;
                 if (maxX - minX < 2)
                 {
                     return false;
