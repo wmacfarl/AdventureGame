@@ -27,56 +27,25 @@ public class DungeonGeneratorScript : MonoBehaviour
     [SerializeField]
     float DungeonCorridorWidth;
 
-    static void DebugDrawRect(Rect rect, Color color, float duration)
-    {
-        Vector2[] points = new Vector2[4];
-        points[0] = rect.position;
-        points[1] = rect.position + Vector2.right * rect.size.x;
-        points[2] = rect.position + rect.size;
-        points[3] = rect.position + Vector2.up * rect.size.y;
+    [SerializeField]
+    float ScaleDownFactorMin;
 
-        Debug.DrawLine(points[0], points[1], color, duration);
-        Debug.DrawLine(points[1], points[2], color, duration);
-        Debug.DrawLine(points[2], points[3], color, duration);
-        Debug.DrawLine(points[3], points[0], color, duration);
-    }
-
-    static public bool DoRectsTouchInX(Rect rect1, Rect rect2, float epsilon)
-    {
-        rect1.size += Vector2.right * epsilon;
-        rect2.size += Vector2.right * epsilon;
-        rect1.position -= Vector2.right * epsilon * .5f;
-        rect2.position -= Vector2.right * epsilon * .5f;
-        return (rect1.Overlaps(rect2) || rect2.Overlaps(rect1));
-    }
-
-    static public bool DoRectsTouchInY(Rect rect1, Rect rect2, float epsilon)
-    {
-        rect1.size += Vector2.up * epsilon;
-        rect2.size += Vector2.up * epsilon;
-        rect1.position -= Vector2.up * epsilon * .5f;
-        rect2.position -= Vector2.up * epsilon * .5f;
-        return (rect1.Overlaps(rect2) || rect2.Overlaps(rect1));
-    }
-
-    static public bool DoRectsTouchWithinEpsilon(Rect rect1, Rect rect2, float epsilon)
-    {
-        return DoRectsTouchInX(rect1, rect2, epsilon) || DoRectsTouchInY(rect1, rect2, epsilon);
-    }
+    [SerializeField]
+    float ScaleDownFactorMax;
 
     public class Dungeon
     {
         public DungeonRegion RootRegion;
-        List<DungeonCorridor> Corridors;
+        public List<DungeonCorridor> Corridors;
         public List<DungeonRegion> AllSubRegions;
         public List<DungeonRoom> Rooms;
-        Vector2 DungeonSize;
-        float MinimumRoomArea;
-        float MinimumRoomLength;
-        float MaximumRoomArea;
-        float ChanceToStopSplitting;
-        int MinimumTreeDepthToStopSplitting;
-        float CorridorWidth;
+        public Vector2 DungeonSize;
+        public float MinimumRoomArea;
+        public float MinimumRoomLength;
+        public float MaximumRoomArea;
+        public float ChanceToStopSplitting;
+        public int MinimumTreeDepthToStopSplitting;
+        public float CorridorWidth;
 
 
         public Dungeon(Vector2 size, float minArea, float maxArea, float minLength, float chanceToStopSplit, int minDepth, float corridorWidth)
@@ -91,9 +60,7 @@ public class DungeonGeneratorScript : MonoBehaviour
             this.Corridors = new List<DungeonCorridor>();
             this.Rooms = new List<DungeonRoom>();
             this.CorridorWidth = corridorWidth;
-            this.RootRegion = DungeonRegion.CreateRootRegion(this.DungeonSize, this.MinimumRoomArea, this.MinimumRoomLength,
-                                                             this.MaximumRoomArea, this.ChanceToStopSplitting, this.MinimumTreeDepthToStopSplitting,
-                                                             this);
+            this.RootRegion = DungeonRegion.CreateRootRegion(this);
         }
 
         public bool CreateCorridorBetweenRooms(DungeonRoom room1, DungeonRoom room2)
@@ -105,13 +72,12 @@ public class DungeonGeneratorScript : MonoBehaviour
             DungeonRegion region2 = room2.ContainingRegion;
             Color color = Color.grey;
 
-            if (DoRectsTouchInX(room1.ContainingRegion.RegionFootprint, room2.ContainingRegion.RegionFootprint, .01f))
+            if (RectHelper.DoRectsTouchInX(room1.ContainingRegion.RegionFootprint, room2.ContainingRegion.RegionFootprint, .01f))
             {
                 float minY = Mathf.Max(room1.roomFootprint.yMin, room2.roomFootprint.yMin+1.5f);
                 float maxY = Mathf.Min(room1.roomFootprint.yMax, room2.roomFootprint.yMax-1.5f);
                 if (maxY-minY < 2)
                 {
-                    Debug.Log("too close to connect");
                     return false;
                 }
                 float yValue = Mathf.Round(Random.Range(minY, maxY));
@@ -121,23 +87,20 @@ public class DungeonGeneratorScript : MonoBehaviour
                     hallwayDirection = Vector2.right;
                     hallwayStartingPoint = new Vector2(room1.roomFootprint.xMax, yValue);
                     hallwayEndingPoint = new Vector2(room2.roomFootprint.xMin, yValue);
-                    color = Color.green;
                 }
                 else
                 {
                     hallwayDirection = Vector2.left;
                     hallwayStartingPoint = new Vector2(room1.roomFootprint.xMin, yValue);
                     hallwayEndingPoint = new Vector2(room2.roomFootprint.xMax, yValue);
-                    color = Color.blue;
                 }
             }
-            else if (DoRectsTouchInY(room1.ContainingRegion.RegionFootprint, room2.ContainingRegion.RegionFootprint, .01f))
+            else if (RectHelper.DoRectsTouchInY(room1.ContainingRegion.RegionFootprint, room2.ContainingRegion.RegionFootprint, .01f))
             {
                 float minX = Mathf.Max(room1.roomFootprint.xMin, room2.roomFootprint.xMin+1.5f);
                 float maxX = Mathf.Min(room1.roomFootprint.xMax, room2.roomFootprint.xMax-1.5f);
                 if (maxX - minX < 2)
                 {
-                    Debug.Log("too close to connect");
                     return false;
                 }
                 float xValue = Mathf.Round(Random.Range(minX, maxX));
@@ -146,14 +109,12 @@ public class DungeonGeneratorScript : MonoBehaviour
                     hallwayDirection = Vector2.up;
                     hallwayStartingPoint = new Vector2(xValue, room1.roomFootprint.yMax);
                     hallwayEndingPoint = new Vector2(xValue, room2.roomFootprint.yMin);
-                    color = Color.green;
                 }
                 else
                 {
                     hallwayDirection = Vector2.down;
                     hallwayStartingPoint = new Vector2(xValue, room1.roomFootprint.yMin);
                     hallwayEndingPoint = new Vector2(xValue, room2.roomFootprint.yMax);
-                    color = Color.blue;
                 }
             }
             else
@@ -166,7 +127,7 @@ public class DungeonGeneratorScript : MonoBehaviour
             hallwayDimensions += Vector2.Perpendicular(hallwayDirection);
             Rect corridorRect = new Rect(hallwayStartingPoint, hallwayDimensions*-1);
             DungeonCorridor newCorridor = new DungeonCorridor(room1, room2, corridorRect);
-            DebugDrawRect(corridorRect, Color.yellow, 20000);
+            this.Corridors.Add(newCorridor);
             return true;
         }
 
@@ -175,9 +136,16 @@ public class DungeonGeneratorScript : MonoBehaviour
             throw new System.Exception("Not written yet");
         }
 
-        public void DebugDrawDungeon()
+        public void DebugDrawDungeon(float duration)
         {
-            throw new System.Exception("Not written yet");
+            foreach (DungeonRoom room in Rooms)
+            {
+                RectHelper.DebugDrawRect(room.roomFootprint, Color.green, duration);
+            }
+            foreach (DungeonCorridor corridor in Corridors)
+            {
+                RectHelper.DebugDrawRect(corridor.CorridorFootprint, Color.yellow, duration);
+            }
         }
     }
 
@@ -194,11 +162,26 @@ public class DungeonGeneratorScript : MonoBehaviour
         int treeDepth;
         DungeonRoom DungeonRoom;
         Dungeon ParentDungeon;
-
         DungeonRegion[] SubRegions;
 
-        DungeonRegion()
+        private DungeonRegion(Dungeon parent)
         {
+            this.ParentDungeon = parent;
+            this.IsRoomRegion = false;
+            this.MySiblingRegion = null;
+        }
+
+        public static DungeonRegion CreateRootRegion(Dungeon parentDungeon)
+        {
+            DungeonRegion rootRegion = new DungeonRegion(parentDungeon);
+            rootRegion.RegionFootprint = new Rect(-parentDungeon.DungeonSize * .5f, parentDungeon.DungeonSize);
+            rootRegion.MinimumRoomArea = parentDungeon.MinimumRoomArea;
+            rootRegion.MinimumRoomLength = parentDungeon.MinimumRoomLength;
+            rootRegion.MaximumRoomArea = parentDungeon.MaximumRoomArea;
+            rootRegion.ChanceToStopSplitting = parentDungeon.ChanceToStopSplitting;
+            rootRegion.MinimumTreeDepthToStopSplitting = parentDungeon.MinimumTreeDepthToStopSplitting;
+            rootRegion.treeDepth = 0;
+            return rootRegion;
         }
 
         public List<DungeonRoom> GetAllRoomsInRegion()
@@ -218,11 +201,6 @@ public class DungeonGeneratorScript : MonoBehaviour
 
         public List<DungeonRegion> GetLeafRegions(int depthCount)
         {
-            depthCount++;
-            if (depthCount > 1000)
-            {
-                return null;
-            }
             List<DungeonRegion> leafRegions = new List<DungeonRegion>();
             if (this.SubRegions == null)
             {
@@ -252,23 +230,6 @@ public class DungeonGeneratorScript : MonoBehaviour
             this.treeDepth = parentRegion.treeDepth + 1;
             RegionFootprint = regionFootproint;
             IsRoomRegion = false;
-        }
-
-        public static DungeonRegion CreateRootRegion(Vector2 dungeonSize, float minimumRoomArea, float minimumRoomLength, float maximumRoomArea,
-                                              float chanceToStopSplitting, int minimumTreeDepthToStopSplitting, Dungeon parentDungeon)
-        {
-            DungeonRegion rootRegion = new DungeonRegion();
-            rootRegion.ParentDungeon = parentDungeon;
-            rootRegion.RegionFootprint = new Rect(-dungeonSize * .5f, dungeonSize);
-            rootRegion.MinimumRoomArea = minimumRoomArea;
-            rootRegion.MinimumRoomLength = minimumRoomLength;
-            rootRegion.MaximumRoomArea = maximumRoomArea;
-            rootRegion.ChanceToStopSplitting = chanceToStopSplitting;
-            rootRegion.MinimumTreeDepthToStopSplitting = minimumTreeDepthToStopSplitting;
-            rootRegion.treeDepth = 0;
-            rootRegion.IsRoomRegion = false;
-            rootRegion.MySiblingRegion = null;
-            return rootRegion;
         }
 
         public bool Split()
@@ -343,10 +304,7 @@ public class DungeonGeneratorScript : MonoBehaviour
                 return false;
             }
 
-            Vector2 newRegionSize1;
-            Vector2 newRegionSize2;
-            Vector2 newRegionOrigin1;
-            Vector2 newRegionOrigin2;
+            Vector2 newRegionSize1, newRegionSize2, newRegionOrigin1, newRegionOrigin2;
 
             if (doSplitHorizontally)
             {
@@ -379,6 +337,7 @@ public class DungeonGeneratorScript : MonoBehaviour
 
             SubRegions[0].ParentDungeon = this.ParentDungeon;
             SubRegions[1].ParentDungeon = this.ParentDungeon;
+
             this.ParentDungeon.AllSubRegions.AddRange(SubRegions);
             SubRegions[0].MySiblingRegion = SubRegions[1];
             SubRegions[1].MySiblingRegion = SubRegions[0];
@@ -388,14 +347,7 @@ public class DungeonGeneratorScript : MonoBehaviour
 
         bool IsFootprintTooSmall(Rect footprint)
         {
-            if (footprint.size.x < MinimumRoomLength || footprint.size.y < MinimumRoomLength || footprint.size.x * footprint.size.y < MinimumRoomArea)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (footprint.size.x < MinimumRoomLength || footprint.size.y < MinimumRoomLength || footprint.size.x * footprint.size.y < MinimumRoomArea);
         }
     }
 
@@ -411,8 +363,14 @@ public class DungeonGeneratorScript : MonoBehaviour
             this.ConnectedRooms[0] = room1;
             this.ConnectedRooms[1] = room2;
             this.CorridorFootprint = footprint;
-            room1.Corridors.Add(this);
-            room2.Corridors.Add(this);            
+            if (room1.Corridors.Contains(this) == false)
+            {
+                room1.Corridors.Add(this);
+            }
+            if (room2.Corridors.Contains(this) == false)
+            {
+                room2.Corridors.Add(this);
+            }
         }
     }
 
@@ -446,14 +404,7 @@ public class DungeonGeneratorScript : MonoBehaviour
 
         public bool AmIAdjacentTo(DungeonRoom roomToTest)
         {
-            if (this.AdjacentRooms.Contains(roomToTest) || roomToTest.AdjacentRooms.Contains(this))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (this.AdjacentRooms.Contains(roomToTest) || roomToTest.AdjacentRooms.Contains(this));        
         }
     }
 
@@ -492,7 +443,7 @@ public class DungeonGeneratorScript : MonoBehaviour
             {
                 if (room != room2)
                 {
-                    if (DoRectsTouchWithinEpsilon(room.roomFootprint, room2.roomFootprint, .01f))
+                    if (RectHelper.DoRectsTouchWithinEpsilon(room.roomFootprint, room2.roomFootprint, .01f))
                     {
                         if (room.AdjacentRooms.Contains(room2) == false)
                         {
@@ -506,10 +457,19 @@ public class DungeonGeneratorScript : MonoBehaviour
                 }
             }
         }
+
         foreach (DungeonRoom room in newDungeon.Rooms)
         {
-            room.roomFootprint.position *= 1.1f;
-            DebugDrawRect(room.roomFootprint, Color.green, 2000);
+            Vector2 scaleDownFactor = new Vector2(Random.Range(ScaleDownFactorMin, ScaleDownFactorMax), Random.Range(ScaleDownFactorMin, ScaleDownFactorMax));
+            Vector2 newSize = new Vector2(room.roomFootprint.size.x * scaleDownFactor.x, room.roomFootprint.size.y * scaleDownFactor.y);
+            Vector2 sizeDelta = room.roomFootprint.size - newSize;
+            float xSplit = Random.value;
+            float ySplit = Random.value;
+            room.roomFootprint.xMax -= sizeDelta.x * xSplit;
+            room.roomFootprint.xMin += sizeDelta.x * (1-xSplit);
+            room.roomFootprint.yMax -= sizeDelta.y * ySplit;
+            room.roomFootprint.yMin += sizeDelta.y * (1 - ySplit);
+            
         }
 
         //Connect a room in each region to an adjacent room in its sibling region.
@@ -518,7 +478,6 @@ public class DungeonGeneratorScript : MonoBehaviour
             DungeonRegion siblingRegion = subRegion.MySiblingRegion;
             List<DungeonRoom> siblingRooms = siblingRegion.GetAllRoomsInRegion();
             bool madeConnection = false;
-
             foreach (DungeonRoom room in subRegion.GetAllRoomsInRegion())
             {
                 foreach (DungeonRoom siblingRoom in siblingRegion.GetAllRoomsInRegion())
@@ -533,6 +492,8 @@ public class DungeonGeneratorScript : MonoBehaviour
                 }
             }
         }
+
+        newDungeon.DebugDrawDungeon(20000);
     }
 }
 

@@ -1,0 +1,43 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class RectHelper
+{
+    public static void DebugDrawRect(Rect rect, Color color, float duration)
+    {
+        Vector2[] points = new Vector2[4];
+        points[0] = rect.position;
+        points[1] = rect.position + Vector2.right * rect.size.x;
+        points[2] = rect.position + rect.size;
+        points[3] = rect.position + Vector2.up * rect.size.y;
+
+        Debug.DrawLine(points[0], points[1], color, duration);
+        Debug.DrawLine(points[1], points[2], color, duration);
+        Debug.DrawLine(points[2], points[3], color, duration);
+        Debug.DrawLine(points[3], points[0], color, duration);
+    }
+
+    static public bool DoRectsTouchInX(Rect rect1, Rect rect2, float epsilon)
+    {
+        rect1.size += Vector2.right * epsilon;
+        rect2.size += Vector2.right * epsilon;
+        rect1.position -= Vector2.right * epsilon * .5f;
+        rect2.position -= Vector2.right * epsilon * .5f;
+        return (rect1.Overlaps(rect2) || rect2.Overlaps(rect1));
+    }
+
+    static public bool DoRectsTouchInY(Rect rect1, Rect rect2, float epsilon)
+    {
+        rect1.size += Vector2.up * epsilon;
+        rect2.size += Vector2.up * epsilon;
+        rect1.position -= Vector2.up * epsilon * .5f;
+        rect2.position -= Vector2.up * epsilon * .5f;
+        return (rect1.Overlaps(rect2) || rect2.Overlaps(rect1));
+    }
+
+    static public bool DoRectsTouchWithinEpsilon(Rect rect1, Rect rect2, float epsilon)
+    {
+        return DoRectsTouchInX(rect1, rect2, epsilon) || DoRectsTouchInY(rect1, rect2, epsilon);
+    }
+}
