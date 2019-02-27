@@ -74,8 +74,8 @@ public class DungeonGeneratorScript : MonoBehaviour
 
             if (RectHelper.DoRectsTouchInX(room1.ContainingRegion.RegionFootprint, room2.ContainingRegion.RegionFootprint, .01f))
             {
-                float minY = Mathf.Max(room1.roomFootprint.yMin, room2.roomFootprint.yMin+1.5f);
-                float maxY = Mathf.Min(room1.roomFootprint.yMax, room2.roomFootprint.yMax-1.5f);
+                float minY = Mathf.Max(room1.roomFootprint.yMin, room2.roomFootprint.yMin+2f);
+                float maxY = Mathf.Min(room1.roomFootprint.yMax, room2.roomFootprint.yMax-2f);
                 if (maxY-minY < 2)
                 {
                     return false;
@@ -97,8 +97,8 @@ public class DungeonGeneratorScript : MonoBehaviour
             }
             else if (RectHelper.DoRectsTouchInY(room1.ContainingRegion.RegionFootprint, room2.ContainingRegion.RegionFootprint, .01f))
             {
-                float minX = Mathf.Max(room1.roomFootprint.xMin, room2.roomFootprint.xMin+1.5f);
-                float maxX = Mathf.Min(room1.roomFootprint.xMax, room2.roomFootprint.xMax-1.5f);
+                float minX = Mathf.Max(room1.roomFootprint.xMin, room2.roomFootprint.xMin+2f);
+                float maxX = Mathf.Min(room1.roomFootprint.xMax, room2.roomFootprint.xMax-2f);
                 if (maxX - minX < 2)
                 {
                     return false;
@@ -126,8 +126,23 @@ public class DungeonGeneratorScript : MonoBehaviour
             Vector2 hallwayDimensions =  hallwayStartingPoint - hallwayEndingPoint;
             hallwayDimensions += Vector2.Perpendicular(hallwayDirection);
             Rect corridorRect = new Rect(hallwayStartingPoint, hallwayDimensions*-1);
+            float xMin = corridorRect.xMin;
+            float xMax = corridorRect.xMax;
+            float yMin = corridorRect.yMin;
+            float yMax = corridorRect.yMax;
+
+            if (xMin > xMax)
+            {
+                corridorRect.xMin = xMax;
+                corridorRect.xMax = xMin;            
+            }
+            if (yMin > yMax)
+            {
+                corridorRect.yMin = yMax;
+                corridorRect.yMax = yMin;
+            }
             DungeonCorridor newCorridor = new DungeonCorridor(room1, room2, corridorRect);
-            this.Corridors.Add(newCorridor);
+            this.Corridors.Add(newCorridor);            
             return true;
         }
 
@@ -408,6 +423,69 @@ public class DungeonGeneratorScript : MonoBehaviour
         }
     }
 
+    public bool CheckDungeon(Dungeon dungeon)
+    {
+        foreach (DungeonRoom room1 in dungeon.Rooms)
+        {
+            foreach (DungeonRoom room2 in dungeon.Rooms)
+            {
+                if (room1 != room2)
+                {
+                    if (RectHelper.DoRectsTouchWithinEpsilon(room1.roomFootprint, room2.roomFootprint, .01f))
+                    {
+                        Debug.Log("Rooms touch");
+                        return false;
+                    }
+                }
+            }
+            foreach (DungeonCorridor corridor in room1.Corridors)
+            {
+                if (corridor.ConnectedRooms[0] != room1 && corridor.ConnectedRooms[1] != room1)
+                {
+                    Debug.Log("Room contains corridor in room.corridors but corridor does not contain room as connected room.");
+                    return false;
+                }
+            }
+            if (room1.Corridors.Count == 0)
+            {
+                Debug.Log("Room has no connections");
+                return false;
+            }
+        }
+
+        foreach (DungeonCorridor corridor in dungeon.Corridors)
+        {
+            foreach (DungeonRoom room in corridor.ConnectedRooms)
+            {
+                if (room.Corridors.Contains(corridor) == false)
+                {
+                    Debug.Log("Corridor contains room as connected room but room does not contain corridor.");
+                    return false;
+                }
+
+                if (RectHelper.DoRectsTouchWithinEpsilon(room.roomFootprint, corridor.CorridorFootprint, .1f) == false) {
+                    RectHelper.DebugDrawRect(corridor.CorridorFootprint, Color.red, 20000);
+                    RectHelper.DebugDrawRect(room.roomFootprint, Color.magenta, 20000);
+
+                    Debug.Log("corridor.minX = " + corridor.CorridorFootprint.xMin + "corridor.maxX = " + corridor.CorridorFootprint.xMax);
+                    Debug.Log("corridor.minY = " + corridor.CorridorFootprint.yMin + "corridor.maxY = " + corridor.CorridorFootprint.yMax);
+
+                    Debug.Log("room.minX = " + room.roomFootprint.xMin + "room.maxX = " + room.roomFootprint.xMax);
+                    Debug.Log("room.minY = " + room.roomFootprint.yMin + "room.maxY = " + room.roomFootprint.yMax);
+
+
+                    Debug.Log("Room does not connect to corridor");
+                    return false;
+                }
+            }
+            if (corridor.ConnectedRooms[0] == null || corridor.ConnectedRooms[1] == null)
+            {
+                Debug.Log("Corridor has null connection");
+                return false;
+            }
+        }
+        return true;
+    }
 
     public void Start()
     {
@@ -494,6 +572,7 @@ public class DungeonGeneratorScript : MonoBehaviour
         }
 
         newDungeon.DebugDrawDungeon(20000);
+        Debug.Log("Check = " + CheckDungeon(newDungeon));
     }
 }
 
