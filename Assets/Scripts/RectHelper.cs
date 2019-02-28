@@ -40,4 +40,10 @@ public class RectHelper
     {
         return DoRectsTouchInX(rect1, rect2, epsilon) || DoRectsTouchInY(rect1, rect2, epsilon);
     }
+
+    public static void RoundToIntegerDimensions(Rect rect)
+    {
+        rect.position = new Vector2(Mathf.Round(rect.position.x), Mathf.Round(rect.position.y));
+        rect.size = new Vector2(Mathf.Round(rect.size.x), Mathf.Round(rect.size.y));
+    }
 }

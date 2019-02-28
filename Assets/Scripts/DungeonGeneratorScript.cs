@@ -141,6 +141,7 @@ public class DungeonGeneratorScript : MonoBehaviour
                 corridorRect.yMin = yMax;
                 corridorRect.yMax = yMin;
             }
+            RectHelper.RoundToIntegerDimensions(corridorRect);
             DungeonCorridor newCorridor = new DungeonCorridor(room1, room2, corridorRect);
             this.Corridors.Add(newCorridor);            
             return true;
@@ -547,7 +548,7 @@ public class DungeonGeneratorScript : MonoBehaviour
             room.roomFootprint.xMin += sizeDelta.x * (1-xSplit);
             room.roomFootprint.yMax -= sizeDelta.y * ySplit;
             room.roomFootprint.yMin += sizeDelta.y * (1 - ySplit);
-            
+            RectHelper.RoundToIntegerDimensions(room.roomFootprint);            
         }
 
         //Connect a room in each region to an adjacent room in its sibling region.
