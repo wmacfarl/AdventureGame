@@ -1,19 +1,37 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ *  This class defines a node in a 2D Binary Space Partition tree which describes the layout of a Dungeon.
+ *  
+ *  Each Dungeon has a RootRegion that doesn't have any siblings.  This region is divided into two DungeonRegions that are siblings of eachother and
+ *  are SubRegions of the RootRegion.  SubRegions are recursively divided into smaller and smaller pairs.
+ *  
+ *  The last level of DungeonRegions are called the "leaf" regions.  They are not divided and don't have any SubRegions.  Each leaf region contains
+ *  a Room.
+ *  
+ *  Dungeons are divided into DungeonRegions structured as a Binary Space Partitioning Tree.  Every leaf-node in the tree contains a Room.
+ *  
+ *  Presently the BSP tree structure is only being used for generating the Dungeon and ensuring full-connectivity between rooms.  It could potentially
+ *  be used for gameplay logic as well because the speed of traversing a BSP tree is quite fast.
+ */
+
 public class DungeonRegion
 {
-    public DungeonRegion MySiblingRegion;
-    public Rect Footprint;
-    public int DepthInTree;
-    public Room DungeonRoom;
-    public Dungeon ParentDungeon;
-    public DungeonRegion[] SubRegions;
-    public bool IsRoomRegion;
+    public Dungeon ParentDungeon;           //The Dungeon that uses the DungeonRegion
+    public DungeonRegion MySiblingRegion;   //All non-root regions are part of a matched pair from their parent region being divided.
+    public Rect Footprint;                  //The location and dimensions of the region.
+    public DungeonRegion[] SubRegions;      //If the DungeonRegion is not a leaf it will have 2 SubRegions
+    public Room DungeonRoom;                //If the DungeonRegion is a leaf it will contain a DungeonRoom
 
+    public int DepthInTree;                 //Number of subdivisions from the root node
+    public bool WillBeLeafRegion;           //A flag that keeps track whether this region has been marked to become a leaf
+
+
+    //Called from DungeonGenerator.CreateRootRegion() and DungeonGenerator.SplitRegion()
     public DungeonRegion(Dungeon parent)
     {
-        this.IsRoomRegion = false;
+        this.WillBeLeafRegion = false;
         this.ParentDungeon = parent;
         this.MySiblingRegion = null;
     }
@@ -24,6 +42,7 @@ public class DungeonRegion
         Footprint = regionFootproint;
     }
 
+    //This locates all of the leaf nodes under a particular DungeonRegion and returns the Rooms associated with these nodes
     public List<Room> GetAllRoomsInRegion()
     {
         List<DungeonRegion> MyLeaves = this.GetLeafRegions(0);
@@ -35,10 +54,11 @@ public class DungeonRegion
                 MyRooms.Add(leaf.DungeonRoom);
             }
         }
-
         return MyRooms;
     }
 
+    //This recursively searches all of the DungeonRegion's SubRegions.  The depthCount variable is just a counter for how many recursions we've 
+    //done to prevent infinite loops during development and debugging because crashing and having to restart Unity is a pain.
     public List<DungeonRegion> GetLeafRegions(int depthCount)
     {
         List<DungeonRegion> leafRegions = new List<DungeonRegion>();

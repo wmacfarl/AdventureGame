@@ -294,7 +294,7 @@ public class DungeonGenerator{
 
     bool SplitRegion(DungeonRegion region)
     {
-        if (region.SubRegions != null || region.IsRoomRegion)
+        if (region.SubRegions != null || region.WillBeLeafRegions)
         {
             return false;
         }
@@ -302,14 +302,14 @@ public class DungeonGenerator{
         {
             if (Random.value < ChanceToStopSplittingRoom)
             {
-                region.IsRoomRegion = true;
+                region.WillBeLeafRegion = true;
                 return false;
             }
         }
 
         if (region.Footprint.size.x * region.Footprint.size.y < MinimumAreaForDungeonRoom)
         {
-            region.IsRoomRegion = true;
+            region.WillBeLeafRegion = true;
             return false;
         }
 
@@ -326,7 +326,7 @@ public class DungeonGenerator{
 
         if (canSplitHorizontally == false && canSplitVertically == false)
         {
-            region.IsRoomRegion = true;
+            region.WillBeLeafRegion = true;
             return false;
         }
 
@@ -359,7 +359,7 @@ public class DungeonGenerator{
 
         if (splitDistance <= 0)
         {
-            region.IsRoomRegion = true;
+            region.WillBeLeafRegion = true;
             return false;
         }
 
@@ -385,7 +385,7 @@ public class DungeonGenerator{
 
         if (IsFootprintTooSmallForRoom(newRegion1Footprint) || IsFootprintTooSmallForRoom(newRegion2Footprint))
         {
-            region.IsRoomRegion = true;
+            region.WillBeLeafRegion = true;
             return false;
         }
 
