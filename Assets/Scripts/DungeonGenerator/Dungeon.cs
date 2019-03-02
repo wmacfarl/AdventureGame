@@ -33,7 +33,7 @@ public class Dungeon
     {
         foreach (Room room in Rooms)
         {
-            RectHelper.DebugDrawRect(room.roomFootprint, Color.green, duration);
+            RectHelper.DebugDrawRect(room.Footprint, Color.green, duration);
         }
         foreach (Corridor corridor in Corridors)
         {

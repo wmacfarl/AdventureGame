@@ -2,7 +2,11 @@
 using UnityEngine;
 
 /*
- *  This class is used to define a connection between Rooms in a Dungeon.  
+ *  This class is used to define a connection between Rooms in a Dungeon.  Corridors are axis-aligned rectangles.  There is no provision for 
+ *  Corridors that have turns in them.  
+ *  
+ *  If you wanted to make a corridor with a 90-degree turn you could potentially make two that connect to a 
+ *  CorridorWidthxCorridorWidth room in the middle.
  *  
  *  The primary way of creating Corridors and Rooms (and Dungeons) is through the DungeonGenerator.  The class is simple and open-ended enough that
  *  they could be created in other ways, though.

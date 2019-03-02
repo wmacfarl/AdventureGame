@@ -16,7 +16,7 @@ public class Room
                                             //A DungeonRegion contains at most one Room.
     public List<Room> AdjacentRooms;        //AdjacentRooms are rooms that are contained by DungeonRegions that touch our DungeonRegion
     public List<Corridor> Corridors;        //The Corridors that connect to this room.
-    public Rect roomFootprint;              //The Room's size and position
+    public Rect Footprint;              //The Room's size and position
 
 
 
@@ -24,7 +24,7 @@ public class Room
     public Room(DungeonRegion region)
     {
         this.ContainingRegion = region; //The DungeonRegion
-        this.roomFootprint = region.Footprint;
+        this.Footprint = region.Footprint;
         this.AdjacentRooms = new List<Room>();
         this.Corridors = new List<Corridor>();
     }

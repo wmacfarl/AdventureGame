@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 /*
  *  This class defines a node in a 2D Binary Space Partition tree which describes the layout of a Dungeon.
@@ -57,8 +58,11 @@ public class DungeonRegion
         return MyRooms;
     }
 
-    //This recursively searches all of the DungeonRegion's SubRegions.  The depthCount variable is just a counter for how many recursions we've 
-    //done to prevent infinite loops during development and debugging because crashing and having to restart Unity is a pain.
+    //This recursively searches all of the DungeonRegion's SubRegions to find Leaf regions.  
+
+    //The depthCount variable is just a counter for how many recursions we've done to prevent infinite loops during development and 
+    //debugging because crashing and having to restart Unity is a pain.
+
     public List<DungeonRegion> GetLeafRegions(int depthCount)
     {
         List<DungeonRegion> leafRegions = new List<DungeonRegion>();
