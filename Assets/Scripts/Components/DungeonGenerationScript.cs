@@ -47,6 +47,19 @@ public class DungeonGenerationScript : MonoBehaviour
     public Tile CorridorTile;
     public Tile WallTile;
 
+    public Tile RoomFloorTile;
+    public Tile CorridorFloorTile;
+    public Tile EastWallTile;
+    public Tile WestWallTile;
+    public Tile NorthWallInnerTile;
+    public Tile NorthWallOuterTile;
+    public Tile SouthWallTile;
+    public Tile NorthEastWallTile;
+    public Tile SouthEastWallTile;
+    public Tile NorthWestWallTile;
+    public Tile SouthWestWallTile;
+    public Tile InteriorWallTile;
+
     Tilemap tilemap;
     Dungeon MyDungeon;
 
@@ -62,13 +75,39 @@ public class DungeonGenerationScript : MonoBehaviour
         tilemap.RefreshAllTiles();
     }
 
+    public void TileRoom(Room room)
+    {
+        Vector3Int min = tilemap.WorldToCell(room.Footprint.min+Vector2.right + Vector2.up);
+        Vector3Int max = tilemap.WorldToCell(room.Footprint.max-Vector2.right*2-Vector2.up);
+        //Fill the interior with the floor
+        BoxFill(tilemap, RoomTile, min, max);
+
+        Vector3Int NorthWestCorner = tilemap.WorldToCell(new Vector2(room.Footprint.min.x, room.Footprint.max.y-1));
+        Vector3Int NorthEastCorner = tilemap.WorldToCell(room.Footprint.max-Vector2.right-Vector2.up);
+        Vector3Int SouthWestCorner = tilemap.WorldToCell(room.Footprint.min);
+        Vector3Int SouthEastCorner = tilemap.WorldToCell(new Vector2(room.Footprint.max.x-1, room.Footprint.min.y));
+
+        BoxFill(tilemap, NorthWallOuterTile, NorthWestCorner+Vector3Int.up+Vector3Int.right, NorthEastCorner+Vector3Int.up-Vector3Int.right);
+
+        BoxFill(tilemap, NorthWallInnerTile, NorthWestCorner, NorthEastCorner);
+        BoxFill(tilemap, SouthWallTile, SouthWestCorner, SouthEastCorner);
+        BoxFill(tilemap, EastWallTile, SouthEastCorner, NorthEastCorner);
+        BoxFill(tilemap, WestWallTile, SouthWestCorner, NorthWestCorner);
+
+        tilemap.SetTile(NorthEastCorner, NorthEastWallTile);
+        tilemap.SetTile(NorthWestCorner, NorthWestWallTile);
+        tilemap.SetTile(SouthEastCorner, SouthEastWallTile);
+        tilemap.SetTile(SouthWestCorner, SouthWestWallTile);
+
+    }
+
+
+
     public void TileRooms()
     {
         foreach (Room room in MyDungeon.Rooms)
         {
-            Vector3Int min = tilemap.WorldToCell(room.Footprint.min);
-            Vector3Int max = tilemap.WorldToCell(room.Footprint.max);
-            BoxFill(tilemap, RoomTile, min, max);
+            TileRoom(room);
         }
     }
 
@@ -103,8 +142,8 @@ public class DungeonGenerationScript : MonoBehaviour
         var xDir = start.x < end.x ? 1 : -1;
         var yDir = start.y < end.y ? 1 : -1;
         //How many tiles on each axis?
-        int xCols = Mathf.Abs(start.x - end.x);
-        int yCols = Mathf.Abs(start.y - end.y);
+        int xCols = Mathf.Abs(start.x - end.x)+1;
+        int yCols = Mathf.Abs(start.y - end.y)+1;
         //Start painting
         for (var x = 0; x < xCols; x++)
         {
