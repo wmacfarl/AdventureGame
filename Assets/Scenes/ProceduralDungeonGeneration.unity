@@ -232,10 +232,19 @@ MonoBehaviour:
   DungeonCorridorWidth: 1
   MinimumPercentOfRegionForRoom: 0.7
   MaximumPercentOfRegionForRoom: 0.95
-  DungeonScaleFactor: 3
-  RoomTile: {fileID: 11400000, guid: f802ad0cb50536b46a2dc954a0f7f560, type: 2}
-  CorridorTile: {fileID: 11400000, guid: 4eca0a007f164594485554dfa9006b7f, type: 2}
-  WallTile: {fileID: 11400000, guid: cf4e2ff6e3a8cef4e8681ac0e5b0baed, type: 2}
+  DungeonScaleFactor: 86
+  RoomFloorTile: {fileID: 11400000, guid: f802ad0cb50536b46a2dc954a0f7f560, type: 2}
+  CorridorFloorTile: {fileID: 11400000, guid: 4eca0a007f164594485554dfa9006b7f, type: 2}
+  EastWallTile: {fileID: 11400000, guid: 088236ec292fc1e46bffd4954d7d60dd, type: 2}
+  WestWallTile: {fileID: 11400000, guid: a868cd15f441b6c438ed3487890a1a8d, type: 2}
+  NorthWallInnerTile: {fileID: 11400000, guid: cf4e2ff6e3a8cef4e8681ac0e5b0baed, type: 2}
+  NorthWallOuterTile: {fileID: 11400000, guid: f98a0a0a1b0d118488cf3159ce0a7690, type: 2}
+  SouthWallTile: {fileID: 11400000, guid: 9b201a0c7accc2b40b7e7b175528e353, type: 2}
+  NorthEastWallTile: {fileID: 11400000, guid: 3cefd34c1160977439bdcdaf708ace73, type: 2}
+  SouthEastWallTile: {fileID: 11400000, guid: d29cd1c423a00eb4db4074b47e15367e, type: 2}
+  NorthWestWallTile: {fileID: 11400000, guid: bf115e577fa70f94395bf441d5a27188, type: 2}
+  SouthWestWallTile: {fileID: 11400000, guid: 77bcb41985b2439428533edfd27d2c1d, type: 2}
+  InteriorWallTile: {fileID: 11400000, guid: 439a275ec19f890438daa4733031f605, type: 2}
 --- !u!4 &1652722480
 Transform:
   m_ObjectHideFlags: 0

@@ -43,21 +43,30 @@ public class DungeonGenerationScript : MonoBehaviour
     [SerializeField]                    //An amount to scale the Dungeon after it is generated.  This might in some cases be better than generating a 
     int DungeonScaleFactor;            //larger dungeon.
 
-    public Tile RoomTile;
-    public Tile CorridorTile;
-    public Tile WallTile;
-
-    public Tile RoomFloorTile;
+    
+    [SerializeField]                    //These tiles are set in the inspector and determine what art we use to tile the room.  The wall tiles should
+    public Tile RoomFloorTile;          //have colliders set in the Tile asset.  The floor tiles should not.
+    [SerializeField]
     public Tile CorridorFloorTile;
+    [SerializeField]
     public Tile EastWallTile;
+    [SerializeField]
     public Tile WestWallTile;
+    [SerializeField]
     public Tile NorthWallInnerTile;
+    [SerializeField]
     public Tile NorthWallOuterTile;
+    [SerializeField]
     public Tile SouthWallTile;
+    [SerializeField]
     public Tile NorthEastWallTile;
+    [SerializeField]
     public Tile SouthEastWallTile;
+    [SerializeField]
     public Tile NorthWestWallTile;
+    [SerializeField]
     public Tile SouthWestWallTile;
+    [SerializeField]
     public Tile InteriorWallTile;
 
     Tilemap tilemap;
@@ -70,6 +79,7 @@ public class DungeonGenerationScript : MonoBehaviour
             MaximumPercentOfRegionForRoom, DungeonScaleFactor);
         MyDungeon = generator.MakeDungeon();
         GenerateTilemap();
+        BoxFill(tilemap, InteriorWallTile, tilemap.WorldToCell(MyDungeon.RootRegion.Footprint.min*DungeonScaleFactor), tilemap.WorldToCell(MyDungeon.RootRegion.Footprint.max*DungeonScaleFactor));
         TileRooms();
         TileCorridors();
         tilemap.RefreshAllTiles();
@@ -80,8 +90,7 @@ public class DungeonGenerationScript : MonoBehaviour
         Vector3Int min = tilemap.WorldToCell(room.Footprint.min+Vector2.right + Vector2.up);
         Vector3Int max = tilemap.WorldToCell(room.Footprint.max-Vector2.right*2-Vector2.up);
         //Fill the interior with the floor
-        BoxFill(tilemap, RoomTile, min, max);
-
+        BoxFill(tilemap, RoomFloorTile, min, max);
         Vector3Int NorthWestCorner = tilemap.WorldToCell(new Vector2(room.Footprint.min.x, room.Footprint.max.y-1));
         Vector3Int NorthEastCorner = tilemap.WorldToCell(room.Footprint.max-Vector2.right-Vector2.up);
         Vector3Int SouthWestCorner = tilemap.WorldToCell(room.Footprint.min);
@@ -116,8 +125,8 @@ public class DungeonGenerationScript : MonoBehaviour
         foreach (Corridor corridor in MyDungeon.Corridors)
         {
             Vector3Int min = tilemap.WorldToCell(corridor.Footprint.min);
-            Vector3Int max = tilemap.WorldToCell(corridor.Footprint.max);
-            BoxFill(tilemap, CorridorTile, min, max);
+            Vector3Int max = tilemap.WorldToCell(corridor.Footprint.max-Vector2.right-Vector2.up);
+            BoxFill(tilemap, CorridorFloorTile, min, max);
         }
     }
 
