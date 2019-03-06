@@ -225,14 +225,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SizeOfDungeonToGenerate: {x: 100, y: 50}
   MinimumAreaToSplitRegion: 16
-  MinimumLengthToSplitRegion: 4
-  ChanceToStopSplittingRoom: 0.1
-  MinimumDepthToStopSplitting: 5
-  MaximumAreaForDungeonRoom: 200
+  MinimumLengthToSplitRegion: 8
+  ChanceToStopSplittingRoom: 0.15
+  MinimumDepthToStopSplitting: 1
+  MaximumAreaForDungeonRoom: 800
   DungeonCorridorWidth: 1
-  MinimumPercentOfRegionForRoom: 0.4
-  MaximumPercentOfRegionForRoom: 0.8
-  DungeonScaleFactor: 2
+  MinimumPercentOfRegionForRoom: 0.7
+  MaximumPercentOfRegionForRoom: 0.95
+  DungeonScaleFactor: 3
+  RoomTile: {fileID: 11400000, guid: f802ad0cb50536b46a2dc954a0f7f560, type: 2}
+  CorridorTile: {fileID: 11400000, guid: 4eca0a007f164594485554dfa9006b7f, type: 2}
+  WallTile: {fileID: 11400000, guid: cf4e2ff6e3a8cef4e8681ac0e5b0baed, type: 2}
 --- !u!4 &1652722480
 Transform:
   m_ObjectHideFlags: 0

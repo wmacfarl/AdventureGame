@@ -39,9 +39,17 @@ public class RectHelper
         return DoRectsTouchInX(rect1, rect2, epsilon) || DoRectsTouchInY(rect1, rect2, epsilon);
     }
 
-    public static void RoundToIntegerDimensions(Rect rect)
+    public static Rect RoundToIntegerDimensions(Rect rect)
     {
         rect.position = new Vector2(Mathf.Round(rect.position.x), Mathf.Round(rect.position.y));
         rect.size = new Vector2(Mathf.Round(rect.size.x), Mathf.Round(rect.size.y));
+        return rect;
+    }
+
+    public static Rect FloorToIntegerDimensions(Rect rect)
+    {
+        rect.position = new Vector2(Mathf.Floor(rect.position.x), Mathf.Floor(rect.position.y));
+        rect.size = new Vector2(Mathf.Floor(rect.size.x), Mathf.Floor(rect.size.y));
+        return rect;
     }
 }

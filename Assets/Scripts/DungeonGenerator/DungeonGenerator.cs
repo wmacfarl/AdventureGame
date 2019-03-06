@@ -146,7 +146,7 @@ public class DungeonGenerator{
             room.Footprint.xMin += sizeDelta.x * (1 - xSplit);
             room.Footprint.yMax -= sizeDelta.y * ySplit;
             room.Footprint.yMin += sizeDelta.y * (1 - ySplit);
-            
+            room.Footprint = RectHelper.FloorToIntegerDimensions(room.Footprint);
         }
 
         //Connect a room in each region to an adjacent room in its sibling region.  This ensures that the Dungeon is fully-connected and there are
@@ -206,6 +206,8 @@ public class DungeonGenerator{
                 {
                     if (RectHelper.DoRectsTouchWithinEpsilon(room1.Footprint, room2.Footprint, .01f))
                     {
+                        RectHelper.DebugDrawRect(room1.Footprint, Color.red, 20000);
+                        RectHelper.DebugDrawRect(room2.Footprint, Color.yellow, 20000);
                         Debug.Log("Rooms overlap");
                         return false;
                     }
@@ -358,7 +360,7 @@ public class DungeonGenerator{
         }
 
         //We want all of our corridors and rooms to be integer positions and dimensions so that we can easily use a TileMap to draw them
-        RectHelper.RoundToIntegerDimensions(corridorRect);
+        corridorRect = RectHelper.FloorToIntegerDimensions(corridorRect);
         Corridor newCorridor = new Corridor(room1, room2, corridorRect);
         dungeon.Corridors.Add(newCorridor);
         return true;
