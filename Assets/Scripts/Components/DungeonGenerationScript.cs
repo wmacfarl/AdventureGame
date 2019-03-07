@@ -68,6 +68,10 @@ public class DungeonGenerationScript : MonoBehaviour
     public Tile SouthWestWallTile;
     [SerializeField]
     public Tile InteriorWallTile;
+    [SerializeField]
+    public GameObject NorthSouthDoor;
+    [SerializeField]
+    public GameObject EastWestDoor;
 
     Tilemap tilemap;
     Dungeon MyDungeon;
@@ -83,6 +87,31 @@ public class DungeonGenerationScript : MonoBehaviour
         TileRooms();
         TileCorridors();
         tilemap.RefreshAllTiles();
+        AddDoors();
+    }
+
+    public void AddDoors()
+    {
+        GameObject doorToInstantiate;
+        foreach (Corridor corridor in MyDungeon.Corridors)
+        {
+            if (corridor.Direction.x == 0)
+            {
+                doorToInstantiate = NorthSouthDoor;
+                Vector2 southDoorPosition = new Vector2(corridor.Footprint.xMin, corridor.Footprint.yMin-1);
+                Vector2 northDoorPosition = new Vector2(corridor.Footprint.xMin, corridor.Footprint.yMax);
+                GameObject.Instantiate(doorToInstantiate, northDoorPosition, Quaternion.identity);
+                GameObject.Instantiate(doorToInstantiate, southDoorPosition, Quaternion.identity);
+            }
+            else
+            {
+                doorToInstantiate = EastWestDoor;
+                Vector2 westDoorPosition = new Vector2(corridor.Footprint.xMin - 1, corridor.Footprint.yMin); ;
+                Vector2 eastDoorPosition = new Vector2(corridor.Footprint.xMax, corridor.Footprint.yMin);
+                GameObject.Instantiate(doorToInstantiate, eastDoorPosition, Quaternion.identity);
+                GameObject.Instantiate(doorToInstantiate, westDoorPosition, Quaternion.identity);
+            }
+        }
     }
 
     public void TileRoom(Room room)
@@ -122,11 +151,14 @@ public class DungeonGenerationScript : MonoBehaviour
 
     public void TileCorridors()
     {
+        int corridorCount = 0;
         foreach (Corridor corridor in MyDungeon.Corridors)
         {
             Vector3Int min = tilemap.WorldToCell(corridor.Footprint.min);
             Vector3Int max = tilemap.WorldToCell(corridor.Footprint.max-Vector2.right-Vector2.up);
             BoxFill(tilemap, CorridorFloorTile, min, max);
+            corridorCount++;
+            Debug.Log("corridorCount = " + corridorCount);
         }
     }
 

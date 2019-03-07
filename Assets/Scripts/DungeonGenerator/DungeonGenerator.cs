@@ -361,7 +361,7 @@ public class DungeonGenerator{
 
         //We want all of our corridors and rooms to be integer positions and dimensions so that we can easily use a TileMap to draw them
         corridorRect = RectHelper.FloorToIntegerDimensions(corridorRect);
-        Corridor newCorridor = new Corridor(room1, room2, corridorRect);
+        Corridor newCorridor = new Corridor(room1, room2, corridorRect, hallwayDirection);
         dungeon.Corridors.Add(newCorridor);
         return true;
     }

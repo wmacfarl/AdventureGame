@@ -232,7 +232,7 @@ MonoBehaviour:
   DungeonCorridorWidth: 1
   MinimumPercentOfRegionForRoom: 0.7
   MaximumPercentOfRegionForRoom: 0.95
-  DungeonScaleFactor: 86
+  DungeonScaleFactor: 3
   RoomFloorTile: {fileID: 11400000, guid: f802ad0cb50536b46a2dc954a0f7f560, type: 2}
   CorridorFloorTile: {fileID: 11400000, guid: 4eca0a007f164594485554dfa9006b7f, type: 2}
   EastWallTile: {fileID: 11400000, guid: 088236ec292fc1e46bffd4954d7d60dd, type: 2}
@@ -245,6 +245,10 @@ MonoBehaviour:
   NorthWestWallTile: {fileID: 11400000, guid: bf115e577fa70f94395bf441d5a27188, type: 2}
   SouthWestWallTile: {fileID: 11400000, guid: 77bcb41985b2439428533edfd27d2c1d, type: 2}
   InteriorWallTile: {fileID: 11400000, guid: 439a275ec19f890438daa4733031f605, type: 2}
+  NorthSouthDoor: {fileID: 5812945897977935413, guid: 178f83d7051cdce42baeaa75b6b4a7d5,
+    type: 3}
+  EastWestDoor: {fileID: 8203019517789060166, guid: da350c527c3c7ab42a4ac61a4e2d61c6,
+    type: 3}
 --- !u!4 &1652722480
 Transform:
   m_ObjectHideFlags: 0

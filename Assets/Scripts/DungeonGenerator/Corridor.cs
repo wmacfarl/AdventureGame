@@ -16,14 +16,15 @@ public class Corridor
 {
     public Room[] ConnectedRooms;                   //The Rooms the Corridor is connected to
     public Rect Footprint;                          //A rectangle defining the location and dimensions of the Corridor.    
-
+    public Vector2 Direction;
     //At the moment the only place this constructor is called is from the DungeonGenerator's CreateDungeon method.  
 
     //The constructor doesn't do any checking to see if the connection makes sense.  It is up to the code that creates the Corridor to ensure that
     //the connection makes sense given game and geometry logic.
     
-    public Corridor(Room room1, Room room2, Rect footprint)
+    public Corridor(Room room1, Room room2, Rect footprint, Vector2 direction)
     {
+        this.Direction = direction;
         this.ConnectedRooms = new Room[2];
         this.ConnectedRooms[0] = room1;
         this.ConnectedRooms[1] = room2;
