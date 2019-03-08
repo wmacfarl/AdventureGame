@@ -245,9 +245,13 @@ MonoBehaviour:
   NorthWestWallTile: {fileID: 11400000, guid: bf115e577fa70f94395bf441d5a27188, type: 2}
   SouthWestWallTile: {fileID: 11400000, guid: 77bcb41985b2439428533edfd27d2c1d, type: 2}
   InteriorWallTile: {fileID: 11400000, guid: 439a275ec19f890438daa4733031f605, type: 2}
-  NorthSouthDoor: {fileID: 5812945897977935413, guid: 178f83d7051cdce42baeaa75b6b4a7d5,
+  NorthSouthDoorPrefab: {fileID: 5812945897977935413, guid: 178f83d7051cdce42baeaa75b6b4a7d5,
     type: 3}
-  EastWestDoor: {fileID: 8203019517789060166, guid: da350c527c3c7ab42a4ac61a4e2d61c6,
+  EastWestDoorPrefab: {fileID: 8203019517789060166, guid: da350c527c3c7ab42a4ac61a4e2d61c6,
+    type: 3}
+  RoomPrefab: {fileID: 5057911056494980560, guid: cb9d8302b8d69db4aa52cd48b6080d75,
+    type: 3}
+  CorridorPrefab: {fileID: 1287658151743653291, guid: 02d1e8555f221284b90428ffa7d1fde8,
     type: 3}
 --- !u!4 &1652722480
 Transform:

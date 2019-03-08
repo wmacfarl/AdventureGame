@@ -287,19 +287,17 @@ public class DungeonGenerator{
             //Pick a spot that is along both walls to place the corridor
             float yValue = Mathf.Round(Random.Range(minY, maxY));
 
-            //Calculate the starting location and length of the hallway based on which room is to the left and which to the right
-            if (room1.Footprint.position.x < room2.Footprint.position.x)
+            if (room1.Footprint.position.x > room2.Footprint.position.x)
             {
+                Room oldRoom1 = room1;
+                Room oldRoom2 = room2;
+                room1 = oldRoom2;
+                room2 = oldRoom1;
+            }
                 hallwayDirection = Vector2.right;
                 hallwayStartingPoint = new Vector2(room1.Footprint.xMax, yValue);
                 hallwayEndingPoint = new Vector2(room2.Footprint.xMin, yValue);
-            }
-            else
-            {
-                hallwayDirection = Vector2.left;
-                hallwayStartingPoint = new Vector2(room1.Footprint.xMin, yValue);
-                hallwayEndingPoint = new Vector2(room2.Footprint.xMax, yValue);
-            }
+            
         }
         //If the regions touch in the X axis, we make a horizontal corridor
         else if (RectHelper.DoRectsTouchInY(room1.ContainingRegion.Footprint, room2.ContainingRegion.Footprint, .01f))
@@ -316,20 +314,17 @@ public class DungeonGenerator{
 
             //Pick a spot that is along both walls to place the corridor
             float xValue = Mathf.Round(Random.Range(minX, maxX));
-
-            //Calculate the starting location and length of the hallway based on which room is above and which below
-            if (room1.Footprint.position.y < room2.Footprint.position.y)
+            if (room1.Footprint.position.y > room2.Footprint.position.y)
             {
+                Room oldRoom1 = room1;
+                Room oldRoom2 = room2;
+                room1 = oldRoom2;
+                room2 = oldRoom1;
+            }
+
                 hallwayDirection = Vector2.up;
                 hallwayStartingPoint = new Vector2(xValue, room1.Footprint.yMax);
                 hallwayEndingPoint = new Vector2(xValue, room2.Footprint.yMin);
-            }
-            else
-            {
-                hallwayDirection = Vector2.down;
-                hallwayStartingPoint = new Vector2(xValue, room1.Footprint.yMin);
-                hallwayEndingPoint = new Vector2(xValue, room2.Footprint.yMax);
-            }
         }
         else
         {
@@ -374,6 +369,8 @@ public class DungeonGenerator{
         {
             throw new System.Exception("Scale Factor cannot be less then 1");
         }
+        dungeon.RootRegion.Footprint.size *= scaleFactor;
+        dungeon.RootRegion.Footprint.position *= scaleFactor;
         foreach (DungeonRegion region in dungeon.AllSubRegions)
         {
             region.Footprint.position *= scaleFactor;

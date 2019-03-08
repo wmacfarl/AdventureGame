@@ -68,10 +68,17 @@ public class DungeonGenerationScript : MonoBehaviour
     public Tile SouthWestWallTile;
     [SerializeField]
     public Tile InteriorWallTile;
+
+    [SerializeField]                    //These are prefabs for doors, assigned in the inspector.  These are GameObjects and not tiles.
+    public GameObject NorthSouthDoorPrefab;
     [SerializeField]
-    public GameObject NorthSouthDoor;
+    public GameObject EastWestDoorPrefab;
+
+    [SerializeField]                    //These are prefabs for rooms and corridors which contain whatever scripts we need to handle these
+    public GameObject RoomPrefab;       //kinds of regions in-game.
     [SerializeField]
-    public GameObject EastWestDoor;
+    public GameObject CorridorPrefab;
+
 
     Tilemap tilemap;
     Dungeon MyDungeon;
@@ -83,34 +90,15 @@ public class DungeonGenerationScript : MonoBehaviour
             MaximumPercentOfRegionForRoom, DungeonScaleFactor);
         MyDungeon = generator.MakeDungeon();
         GenerateTilemap();
-        BoxFill(tilemap, InteriorWallTile, tilemap.WorldToCell(MyDungeon.RootRegion.Footprint.min*DungeonScaleFactor), tilemap.WorldToCell(MyDungeon.RootRegion.Footprint.max*DungeonScaleFactor));
-        TileRooms();
-        TileCorridors();
+        BoxFill(tilemap, InteriorWallTile, tilemap.WorldToCell(MyDungeon.RootRegion.Footprint.min*1.2f), tilemap.WorldToCell(MyDungeon.RootRegion.Footprint.max*1.2f));
+        MakeRoom();
+        MakeCorridors();
         tilemap.RefreshAllTiles();
-        AddDoors();
-    }
 
-    public void AddDoors()
-    {
-        GameObject doorToInstantiate;
-        foreach (Corridor corridor in MyDungeon.Corridors)
+        foreach(Corridor c in MyDungeon.Corridors)
         {
-            if (corridor.Direction.x == 0)
-            {
-                doorToInstantiate = NorthSouthDoor;
-                Vector2 southDoorPosition = new Vector2(corridor.Footprint.xMin, corridor.Footprint.yMin-1);
-                Vector2 northDoorPosition = new Vector2(corridor.Footprint.xMin, corridor.Footprint.yMax);
-                GameObject.Instantiate(doorToInstantiate, northDoorPosition, Quaternion.identity);
-                GameObject.Instantiate(doorToInstantiate, southDoorPosition, Quaternion.identity);
-            }
-            else
-            {
-                doorToInstantiate = EastWestDoor;
-                Vector2 westDoorPosition = new Vector2(corridor.Footprint.xMin - 1, corridor.Footprint.yMin); ;
-                Vector2 eastDoorPosition = new Vector2(corridor.Footprint.xMax, corridor.Footprint.yMin);
-                GameObject.Instantiate(doorToInstantiate, eastDoorPosition, Quaternion.identity);
-                GameObject.Instantiate(doorToInstantiate, westDoorPosition, Quaternion.identity);
-            }
+            RectHelper.DebugDrawRect(c.ConnectedRooms[0].Footprint, Color.blue, 20000);
+            RectHelper.DebugDrawRect(c.ConnectedRooms[1].Footprint, Color.red, 20000);
         }
     }
 
@@ -141,24 +129,64 @@ public class DungeonGenerationScript : MonoBehaviour
 
 
 
-    public void TileRooms()
+    public void MakeRoom()
     {
         foreach (Room room in MyDungeon.Rooms)
         {
             TileRoom(room);
+            GameObject roomObject = GameObject.Instantiate(RoomPrefab);
+            roomObject.transform.position = room.Footprint.position;
+            roomObject.GetComponent<RoomScript>().room = room;
         }
     }
 
-    public void TileCorridors()
+    public void MakeCorridors()
     {
-        int corridorCount = 0;
         foreach (Corridor corridor in MyDungeon.Corridors)
         {
             Vector3Int min = tilemap.WorldToCell(corridor.Footprint.min);
             Vector3Int max = tilemap.WorldToCell(corridor.Footprint.max-Vector2.right-Vector2.up);
             BoxFill(tilemap, CorridorFloorTile, min, max);
-            corridorCount++;
-            Debug.Log("corridorCount = " + corridorCount);
+            GameObject corridorGameObject = GameObject.Instantiate(CorridorPrefab);
+            corridorGameObject.GetComponent<CorridorScript>().corridor = corridor;
+            corridorGameObject.transform.position = corridor.Footprint.position;
+            GameObject doorToInstantiate;
+            GameObject newDoor1;
+            GameObject newDoor2;
+            if (corridor.Direction.x == 0)
+            {
+                doorToInstantiate = NorthSouthDoorPrefab;
+                Vector2 southDoorPosition = new Vector2(corridor.Footprint.xMin, corridor.Footprint.yMin - 1);
+                Vector2 northDoorPosition = new Vector2(corridor.Footprint.xMin, corridor.Footprint.yMax);
+                newDoor1 = GameObject.Instantiate(doorToInstantiate, southDoorPosition, Quaternion.identity);
+                newDoor2 = GameObject.Instantiate(doorToInstantiate, northDoorPosition, Quaternion.identity);
+            }
+            else
+            {
+                doorToInstantiate = EastWestDoorPrefab;
+                Vector2 westDoorPosition = new Vector2(corridor.Footprint.xMin - 1, corridor.Footprint.yMin); ;
+                Vector2 eastDoorPosition = new Vector2(corridor.Footprint.xMax, corridor.Footprint.yMin);
+                newDoor1 = GameObject.Instantiate(doorToInstantiate, westDoorPosition, Quaternion.identity);
+                newDoor2 = GameObject.Instantiate(doorToInstantiate, eastDoorPosition, Quaternion.identity);
+            }
+
+            newDoor1.transform.parent = corridorGameObject.transform;
+            newDoor2.transform.parent = corridorGameObject.transform;
+            foreach (RoomScript roomScript in Object.FindObjectsOfType<RoomScript>())
+            {
+                if (roomScript.room == corridor.ConnectedRooms[0] || roomScript.room == corridor.ConnectedRooms[1])
+                {
+                    roomScript.AttachedCorridors.Add(corridorGameObject);
+                    if (roomScript.room == corridor.ConnectedRooms[0])
+                    {
+                        corridorGameObject.GetComponent<CorridorScript>().Room1 = roomScript.transform.gameObject;
+                    }
+                    if (roomScript.room == corridor.ConnectedRooms[1])
+                    {
+                        corridorGameObject.GetComponent<CorridorScript>().Room2 = roomScript.transform.gameObject;
+                    }
+                }
+            }
         }
     }
 

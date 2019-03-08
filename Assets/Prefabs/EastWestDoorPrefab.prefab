@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3355206136097611770}
   - component: {fileID: 6047794161220531507}
   m_Layer: 0
-  m_Name: EastWestDoor
+  m_Name: EastWestDoorPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
