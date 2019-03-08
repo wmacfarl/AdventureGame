@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1065012601340733763}
   - component: {fileID: 3355206136097611770}
   - component: {fileID: 6047794161220531507}
+  - component: {fileID: 4598028592279438765}
   m_Layer: 0
   m_Name: EastWestDoorPrefab
   m_TagString: Untagged
@@ -151,3 +152,15 @@ PolygonCollider2D:
       - {x: 1, y: 0}
       - {x: 1, y: 0.1875}
       - {x: 0.96875, y: 0.1875}
+--- !u!114 &4598028592279438765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8203019517789060166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b78f13cb9b2595443a52639279f53585, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

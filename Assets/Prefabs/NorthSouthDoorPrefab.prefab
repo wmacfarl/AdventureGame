@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1234292426754318883}
   - component: {fileID: 4395629315347917032}
   - component: {fileID: 1915928184192565021}
+  - component: {fileID: 3440335181616924947}
   m_Layer: 0
   m_Name: NorthSouthDoorPrefab
   m_TagString: Untagged
@@ -151,3 +152,16 @@ PolygonCollider2D:
       - {x: 0.21875, y: 0.0625}
       - {x: 0.25, y: 0.0625}
       - {x: 0.3125, y: 0.15625}
+--- !u!114 &3440335181616924947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5812945897977935413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b78f13cb9b2595443a52639279f53585, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  doorType: 1

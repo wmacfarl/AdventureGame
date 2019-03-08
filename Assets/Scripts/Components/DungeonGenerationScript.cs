@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Collections.Generic;
 
 /*
  * This class is a simple GameObject interface to the DungeonGenerator.  This class exists to get parameter input from the inspector and pass it to a 
@@ -100,6 +101,8 @@ public class DungeonGenerationScript : MonoBehaviour
             RectHelper.DebugDrawRect(c.ConnectedRooms[0].Footprint, Color.blue, 20000);
             RectHelper.DebugDrawRect(c.ConnectedRooms[1].Footprint, Color.red, 20000);
         }
+
+        CheckCorridorRooms();
     }
 
     public void TileRoom(Room room)
@@ -127,7 +130,7 @@ public class DungeonGenerationScript : MonoBehaviour
 
     }
 
-
+    
 
     public void MakeRoom()
     {
@@ -206,7 +209,7 @@ public class DungeonGenerationScript : MonoBehaviour
 
 
     public void BoxFill(Tilemap map, TileBase tile, Vector3Int start, Vector3Int end)
-    {
+    { 
         //Determine directions on X and Y axis
         var xDir = start.x < end.x ? 1 : -1;
         var yDir = start.y < end.y ? 1 : -1;
@@ -228,6 +231,23 @@ public class DungeonGenerationScript : MonoBehaviour
     public void BoxFill(Tilemap map, TileBase tile, Vector3 start, Vector3 end)
     {
         BoxFill(map, tile, map.WorldToCell(start), map.WorldToCell(end));
+    }
+
+    public bool CheckCorridorRooms()
+    {
+        CorridorScript[] corridorScripts = Object.FindObjectsOfType<CorridorScript>();
+        {
+            foreach (CorridorScript corridorScript in corridorScripts)
+            {
+                Corridor corridor = corridorScript.corridor;
+                if (corridor.ConnectedRooms[0] != corridorScript.Room1.GetComponent<RoomScript>().room)
+                {
+                    Debug.Log("rooms don't match");
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
 
