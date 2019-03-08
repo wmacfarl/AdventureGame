@@ -10,6 +10,9 @@ public class DoorScript : MonoBehaviour
         NORTH_SOUTH=1
     }
     public DoorType doorType;
+    public GameObject Room;
+    public GameObject Corridor;
+
     // Start is called before the first frame update
     void Start()
     {

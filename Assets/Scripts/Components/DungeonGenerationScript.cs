@@ -175,6 +175,14 @@ public class DungeonGenerationScript : MonoBehaviour
 
             newDoor1.transform.parent = corridorGameObject.transform;
             newDoor2.transform.parent = corridorGameObject.transform;
+
+            newDoor1.GetComponent<DoorScript>().Corridor = corridorGameObject;
+            newDoor2.GetComponent<DoorScript>().Corridor = corridorGameObject;
+
+            newDoor1.GetComponent<DoorScript>().Room = corridorGameObject.GetComponent<CorridorScript>().Room1;
+            newDoor2.GetComponent<DoorScript>().Room = corridorGameObject.GetComponent<CorridorScript>().Room2;
+
+
             foreach (RoomScript roomScript in Object.FindObjectsOfType<RoomScript>())
             {
                 if (roomScript.room == corridor.ConnectedRooms[0] || roomScript.room == corridor.ConnectedRooms[1])
@@ -190,6 +198,8 @@ public class DungeonGenerationScript : MonoBehaviour
                     }
                 }
             }
+
+
         }
     }
 
