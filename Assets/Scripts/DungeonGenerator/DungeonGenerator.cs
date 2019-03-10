@@ -74,10 +74,10 @@ public class DungeonGenerator{
     }
 
     //MakeDungeon() returns a Dungeon object randomly generated based on the DungeonGenerator's parameters.
-    public Dungeon MakeDungeon()
+    public DungeonFloor MakeDungeon()
     {
         //Make a root region that is the size of the whole Dungeon
-        Dungeon newDungeon = new Dungeon(SizeOfDungeonToGenerate);
+        DungeonFloor newDungeon = new DungeonFloor(SizeOfDungeonToGenerate);
         CreateAndSetRootRegion(newDungeon);
 
         //Run through each LeafRegion in the Dungeon and attempt to split that Leaf.  This should generate two new LeafRegions and make the region
@@ -179,7 +179,7 @@ public class DungeonGenerator{
 
     //Creates a DungeonRegion with the same size as its parent Dungeon to be the root region.  This region is centered on (0,0) to make scaling
     //things up and down easier.
-    public void CreateAndSetRootRegion(Dungeon parentDungeon)
+    public void CreateAndSetRootRegion(DungeonFloor parentDungeon)
     {
         DungeonRegion rootRegion = new DungeonRegion(parentDungeon);
         rootRegion.Footprint = new Rect(-parentDungeon.DungeonSize * .5f, parentDungeon.DungeonSize);
@@ -188,7 +188,7 @@ public class DungeonGenerator{
     }
 
     //Takes a Dungeon object and generates a Unity GameObject to be instantiated in the scene to represent the Dungeon.
-    GameObject CreateDungeonGameObject(Dungeon dungeon)
+    GameObject CreateDungeonGameObject(DungeonFloor dungeon)
     {
         GameObject DungeonGameObject = new GameObject();
         DungeonGameObject.AddComponent<DungeonManagerScript>();
@@ -196,7 +196,7 @@ public class DungeonGenerator{
     }
 
     //Check the Dungeon for integrity.
-    public bool CheckDungeon(Dungeon dungeon)
+    public bool CheckDungeon(DungeonFloor dungeon)
     {
         foreach (Room room1 in dungeon.Rooms)
         {
@@ -263,7 +263,7 @@ public class DungeonGenerator{
     //can easily be fit along both walls.
 
     //Corridors are always axis-aligned rectangles.
-    bool CreateCorridorBetweenRooms(Dungeon dungeon, Room room1, Room room2)
+    bool CreateCorridorBetweenRooms(DungeonFloor dungeon, Room room1, Room room2)
     {
         Vector2 hallwayStartingPoint = room1.Footprint.center;
         Vector2 hallwayDirection = new Vector2();
@@ -363,7 +363,7 @@ public class DungeonGenerator{
 
     //Because CreateCorridorBetweenRooms() is somewhat conservative in its determination of whether it can successfully make a corridor, 
     //it may sometimes be better to make a smaller dungeon and the scale it up to fit you game rather than make a larger dungeon.
-    public void ScaleUpDungeon(Dungeon dungeon, int scaleFactor)
+    public void ScaleUpDungeon(DungeonFloor dungeon, int scaleFactor)
     {
         if (scaleFactor < 1)
         {

@@ -19,7 +19,7 @@ using System.Linq;
 
 public class DungeonRegion
 {
-    public Dungeon ParentDungeon;           //The Dungeon that uses the DungeonRegion
+    public DungeonFloor ParentDungeon;           //The Dungeon that uses the DungeonRegion
     public DungeonRegion MySiblingRegion;   //All non-root regions are part of a matched pair from their parent region being divided.
     public Rect Footprint;                  //The location and dimensions of the region.
     public DungeonRegion[] SubRegions;      //If the DungeonRegion is not a leaf it will have 2 SubRegions
@@ -30,7 +30,7 @@ public class DungeonRegion
 
 
     //Called from DungeonGenerator.CreateRootRegion() and DungeonGenerator.SplitRegion()
-    public DungeonRegion(Dungeon parent)
+    public DungeonRegion(DungeonFloor parent)
     {
         this.WillBeLeafRegion = false;
         this.ParentDungeon = parent;

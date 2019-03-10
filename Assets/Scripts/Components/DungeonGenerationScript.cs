@@ -80,32 +80,69 @@ public class DungeonGenerationScript : MonoBehaviour
     [SerializeField]
     public GameObject CorridorPrefab;
 
+    [SerializeField]
+    int NumberOfFloors;
 
-    Tilemap tilemap;
-    Dungeon MyDungeon;
+    List<DungeonFloor> DungeonFloors;
+
+    public void GenerateFloors(DungeonGenerator generator, DungeonManagerScript dungeonManager)
+    {
+        List<GameObject> floors = new List<GameObject>();
+        for (int i = 0; i < NumberOfFloors; i++)
+        {
+            DungeonFloor newFloor = generator.MakeDungeon();
+            GameObject newFloorGameObject = new GameObject();
+            newFloorGameObject.name = "DungeonFloor_" + i;
+            DungeonFloorScript newFloorScript = newFloorGameObject.AddComponent<DungeonFloorScript>();
+
+            newFloorScript.FloorNumber = i;
+            newFloorScript.dungeonFloor = newFloor;
+
+            GenerateTilemap(newFloorGameObject);
+            FillTilemap(newFloorGameObject);
+            MakeRooms(newFloorGameObject);
+            MakeCorridors(newFloorGameObject);
+            CheckCorridorRooms();
+            if (i != 0)
+            {
+                newFloorGameObject.SetActive(false);
+            }
+
+            dungeonManager.DungeonFloorGameObjects.Add(newFloorGameObject);            
+        }
+    }
+
+
+    public void PopulateFloors(DungeonGenerator generator, DungeonManagerScript dungeonManager )
+    {
+
+    }
 
     public void Start()
     {
+
         DungeonGenerator generator = new DungeonGenerator(SizeOfDungeonToGenerate, MinimumAreaToSplitRegion, MinimumLengthToSplitRegion,
             ChanceToStopSplittingRoom, MinimumDepthToStopSplitting, MaximumAreaForDungeonRoom, DungeonCorridorWidth, MinimumPercentOfRegionForRoom,
             MaximumPercentOfRegionForRoom, DungeonScaleFactor);
-        MyDungeon = generator.MakeDungeon();
-        GenerateTilemap();
-        BoxFill(tilemap, InteriorWallTile, tilemap.WorldToCell(MyDungeon.RootRegion.Footprint.min*1.2f), tilemap.WorldToCell(MyDungeon.RootRegion.Footprint.max*1.2f));
-        MakeRoom();
-        MakeCorridors();
-        tilemap.RefreshAllTiles();
 
-        foreach(Corridor c in MyDungeon.Corridors)
-        {
-            RectHelper.DebugDrawRect(c.ConnectedRooms[0].Footprint, Color.blue, 20000);
-            RectHelper.DebugDrawRect(c.ConnectedRooms[1].Footprint, Color.red, 20000);
-        }
+        GameObject dungeonManagerGameObject = new GameObject();
+        DungeonManagerScript dungeonManager = dungeonManagerGameObject.AddComponent<DungeonManagerScript>();
+        dungeonManagerGameObject.name = "Dungeon Manager";
+    
+        GenerateFloors(generator, dungeonManager);
+        PopulateFloors(generator, dungeonManager);
 
-        CheckCorridorRooms();
+        GameObject.Destroy(this);
     }
 
-    public void TileRoom(Room room)
+    public void FillTilemap(GameObject dungeonFloorGO)
+    {
+        Tilemap tilemap = dungeonFloorGO.GetComponent<DungeonFloorScript>().MyTilemap;
+        DungeonFloor newFloor = dungeonFloorGO.GetComponent<DungeonFloorScript>().dungeonFloor;
+        BoxFill(tilemap, InteriorWallTile, tilemap.WorldToCell(newFloor.RootRegion.Footprint.min * 1.2f), tilemap.WorldToCell(newFloor.RootRegion.Footprint.max * 1.2f));
+    }
+
+    public void TileRoom(Room room, Tilemap tilemap)
     {
         Vector3Int min = tilemap.WorldToCell(room.Footprint.min+Vector2.right + Vector2.up);
         Vector3Int max = tilemap.WorldToCell(room.Footprint.max-Vector2.right*2-Vector2.up);
@@ -132,27 +169,40 @@ public class DungeonGenerationScript : MonoBehaviour
 
     
 
-    public void MakeRoom()
+    public void MakeRooms(GameObject newFloorGO)
     {
-        foreach (Room room in MyDungeon.Rooms)
+        DungeonFloorScript dungeonFloorScript = newFloorGO.GetComponent<DungeonFloorScript>();
+        Tilemap tilemap= dungeonFloorScript.MyTilemap;
+        DungeonFloor dungeonFloor = dungeonFloorScript.dungeonFloor;
+        foreach (Room room in dungeonFloor.Rooms)
         {
-            TileRoom(room);
+            TileRoom(room, tilemap);
             GameObject roomObject = GameObject.Instantiate(RoomPrefab);
+
+            dungeonFloorScript.RoomGameObjects.Add(roomObject);
             roomObject.transform.position = room.Footprint.position;
             roomObject.GetComponent<RoomScript>().room = room;
+            roomObject.transform.parent = newFloorGO.transform;
+
         }
     }
 
-    public void MakeCorridors()
+    public void MakeCorridors(GameObject newFloorGO)
     {
-        foreach (Corridor corridor in MyDungeon.Corridors)
+        DungeonFloorScript dungeonFloorScript = newFloorGO.GetComponent<DungeonFloorScript>();
+        Tilemap tilemap = dungeonFloorScript.MyTilemap;
+        DungeonFloor dungeonFloor = dungeonFloorScript.dungeonFloor;
+
+        foreach (Corridor corridor in dungeonFloor.Corridors)
         {
             Vector3Int min = tilemap.WorldToCell(corridor.Footprint.min);
             Vector3Int max = tilemap.WorldToCell(corridor.Footprint.max-Vector2.right-Vector2.up);
             BoxFill(tilemap, CorridorFloorTile, min, max);
             GameObject corridorGameObject = GameObject.Instantiate(CorridorPrefab);
+            dungeonFloorScript.CorridorGameObjects.Add(corridorGameObject);
             corridorGameObject.GetComponent<CorridorScript>().corridor = corridor;
             corridorGameObject.transform.position = corridor.Footprint.position;
+            corridorGameObject.transform.parent = newFloorGO.transform;
             GameObject doorToInstantiate;
             GameObject newDoor1;
             GameObject newDoor2;
@@ -173,6 +223,9 @@ public class DungeonGenerationScript : MonoBehaviour
                 newDoor2 = GameObject.Instantiate(doorToInstantiate, eastDoorPosition, Quaternion.identity);
             }
 
+            dungeonFloorScript.DoorGameObjects.Add(newDoor1);
+            dungeonFloorScript.DoorGameObjects.Add(newDoor2);
+
             newDoor1.transform.parent = corridorGameObject.transform;
             newDoor2.transform.parent = corridorGameObject.transform;
 
@@ -181,7 +234,6 @@ public class DungeonGenerationScript : MonoBehaviour
 
             newDoor1.GetComponent<DoorScript>().Room = corridorGameObject.GetComponent<CorridorScript>().Room1;
             newDoor2.GetComponent<DoorScript>().Room = corridorGameObject.GetComponent<CorridorScript>().Room2;
-
 
             foreach (RoomScript roomScript in Object.FindObjectsOfType<RoomScript>())
             {
@@ -198,23 +250,25 @@ public class DungeonGenerationScript : MonoBehaviour
                     }
                 }
             }
-
-
         }
     }
 
-    public GameObject GenerateTilemap()
+    public void GenerateTilemap(GameObject floorGameObject)
     {
         GameObject tilemapGO = new GameObject();
         GameObject gridGO = new GameObject();
 
-        tilemap = tilemapGO.AddComponent<Tilemap>();
+        tilemapGO.AddComponent<Tilemap>();
         tilemapGO.AddComponent<TilemapRenderer>();
         Grid grid = gridGO.AddComponent<Grid>();
+
+        grid.transform.parent = floorGameObject.transform;
         gridGO.name = "Grid";
         tilemapGO.name = "Tilemap";
         tilemapGO.transform.parent = gridGO.transform;
-        return gridGO;
+        DungeonFloorScript newFloorScript = floorGameObject.GetComponent<DungeonFloorScript>();
+        newFloorScript.MyGrid = gridGO;
+        newFloorScript.MyTilemap = newFloorScript.MyGrid.GetComponentInChildren<Tilemap>();
     }
 
 

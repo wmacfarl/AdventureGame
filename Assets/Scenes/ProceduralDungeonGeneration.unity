@@ -253,6 +253,7 @@ MonoBehaviour:
     type: 3}
   CorridorPrefab: {fileID: 1287658151743653291, guid: 02d1e8555f221284b90428ffa7d1fde8,
     type: 3}
+  NumberOfFloors: 3
 --- !u!4 &1652722480
 Transform:
   m_ObjectHideFlags: 0

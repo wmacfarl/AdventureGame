@@ -11,7 +11,7 @@ using UnityEngine;
    *  The primary way of creating Rooms, Corridors (and Dungeons) is through the DungeonGenerator.  The Room class is simple and open-ended enough that
    *  they could be created in other ways, though.
    */
-public class Dungeon
+public class DungeonFloor
 {
     public DungeonRegion RootRegion;    //The root DungeonRegion.  This is the only DungeonRegion without a sibling.
     public List<Corridor> Corridors;
@@ -20,7 +20,7 @@ public class Dungeon
     public Vector2 DungeonSize;                 
     
     //This constructor is called from DungeonGenerator.MakeDungeon()
-    public Dungeon(Vector2 size)
+    public DungeonFloor(Vector2 size)
     {
         this.DungeonSize = size;
         this.AllSubRegions = new List<DungeonRegion>();
